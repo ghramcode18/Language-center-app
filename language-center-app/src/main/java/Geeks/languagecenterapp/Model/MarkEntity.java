@@ -8,22 +8,23 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Entity
-@Table(name = "book")
+@Table(name = "mark")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class BookEntity {
+public class MarkEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne(targetEntity = UserEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "admin_id")
     private UserEntity user;
 
-    @ManyToOne(targetEntity = PlacementTestEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "placement_id")
-    private PlacementTestEntity placementTest;
+    @OneToOne(targetEntity = CourseEntity.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id")
+    private CourseEntity course;
 
-    private Date bookingDate;
+    private String file;
+    private Date date;
 }

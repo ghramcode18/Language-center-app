@@ -78,6 +78,9 @@ public class UserEntity {
     @OneToMany(targetEntity = AttendanceEntity.class ,mappedBy ="user" ,orphanRemoval = true)
     private List<AttendanceEntity> AttendanceList ;
 
+    @OneToMany(targetEntity = MarkEntity.class ,mappedBy ="user" ,orphanRemoval = true)
+    private List<MarkEntity> marks ;
+
 
 
 
