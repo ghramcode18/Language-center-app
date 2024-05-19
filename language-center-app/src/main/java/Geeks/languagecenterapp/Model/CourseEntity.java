@@ -64,7 +64,8 @@ public class CourseEntity {
     @OneToMany(targetEntity = CourseImageEntity.class ,mappedBy ="course" ,orphanRemoval = true)
     private List<CourseImageEntity> courseImageList ;
 
-
+    @OneToOne(targetEntity = MarkEntity.class ,mappedBy ="course" ,orphanRemoval = true)
+    private MarkEntity mark;
 
 
 }
