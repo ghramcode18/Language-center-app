@@ -2,11 +2,13 @@ package Geeks.languagecenterapp.Model;
 
 import Geeks.languagecenterapp.Model.Enum.GenderEnum;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,15 +30,18 @@ public class UserEntity {
     @Column(nullable = true)
     private String bio;
 
-    @Column(name = "date_of_bearth")
-    private Date dob;
 
+    @Column(name = "date_of_bearth" ,nullable = true)
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDateTime dob;
+
+    @Column(nullable = true)
     private GenderEnum gender;
 
     @Column(nullable = true)
     private String education;
 
-    @Column(nullable = true)
+    @Column(nullable = true ,unique = true)
     private String phoneNumber;
 
     @Column(unique = true)
