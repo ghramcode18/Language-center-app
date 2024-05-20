@@ -1,11 +1,13 @@
 package Geeks.languagecenterapp.Model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -14,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class PlacementTestEntity {
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -21,9 +24,9 @@ public class PlacementTestEntity {
     private String language;
 
     private int maxNum;
-
-    private Date date;
-
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime date;
+    @JsonIgnore
     @OneToMany(targetEntity = BookEntity.class ,mappedBy ="placementTest" ,orphanRemoval = true)
     private List<BookEntity> bookList ;
 }
