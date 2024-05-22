@@ -2,16 +2,18 @@ package Geeks.languagecenterapp.Model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+@Data
 @Entity
+@Builder
 @Table(name = "token")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class TokenEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -4,6 +4,7 @@ import Geeks.languagecenterapp.Model.Enum.GenderEnum;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,33 +16,34 @@ import java.util.List;
 @Table(name = "user")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Data
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(nullable = false)
     private String firstName;
 
+    @Column(nullable = false)
     private String lastName;
 
-    @Column(nullable = true)
     private String bio;
 
-    @Column(name = "date_of_bearth")
+    @Column(name = "date_of_birth")
     private Date dob;
 
     private GenderEnum gender;
 
-    @Column(nullable = true)
     private String education;
 
-    @Column(nullable = true)
     private String phoneNumber;
 
     @Column(unique = true)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
     private UserAccountEnum accountType;
