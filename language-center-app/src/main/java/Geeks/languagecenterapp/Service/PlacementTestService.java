@@ -101,7 +101,7 @@ public class PlacementTestService {
             userEntity.setPhoneNumber(RequestBody.getPhoneNumber());
             userEntity.setFirstName(RequestBody.getFirstName());
             userEntity.setLastName(RequestBody.getLastName());
-            userEntity.setAccountType(UserAccountEnum.Guest);
+            userEntity.setAccountType(UserAccountEnum.GUEST);
             userRepository.save(userEntity);
         } else {
             userEntity = user.get();

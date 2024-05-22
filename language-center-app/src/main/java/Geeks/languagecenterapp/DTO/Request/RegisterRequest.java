@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -33,6 +34,6 @@ public class RegisterRequest {
 
     private String bio;
 
-    private Date dob;
+    private LocalDateTime dob;
 
 }

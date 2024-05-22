@@ -4,5 +4,6 @@ public enum UserAccountEnum {
     USER,
     TEACHER,
     ADMIN,
-    SECRETARY
+    SECRETARY,
+    GUEST
 }
