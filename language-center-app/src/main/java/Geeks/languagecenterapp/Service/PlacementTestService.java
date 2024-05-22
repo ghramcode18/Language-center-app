@@ -1,7 +1,6 @@
 package Geeks.languagecenterapp.Service;
 import Geeks.languagecenterapp.DTO.Request.BookRequestBody;
 import Geeks.languagecenterapp.DTO.Request.PlacementTestRequestBody;
-import Geeks.languagecenterapp.DTO.Response.ScheduleResponse;
 import Geeks.languagecenterapp.Model.BookEntity;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Model.PlacementTestEntity;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class PlacementTestService {
@@ -114,12 +112,6 @@ public class PlacementTestService {
             return new ResponseEntity<>("Book already exists.", HttpStatus.CONFLICT);
         }
 
-        // Check the current number of bookings for this placement test
-        int currentBookings = bookRepository.countByPlacementTestId(placementTest.get().getId());
-        if (currentBookings >= placementTest.get().getMaxNum()) {
-            return new ResponseEntity<>("The maximum number of bookings for this placement test has been reached.", HttpStatus.CONFLICT);
-        }
-
         // Create and save the new booking
         book.setUser(userEntity);
         book.setPlacementTest(placementTest.get());
@@ -128,35 +120,4 @@ public class PlacementTestService {
 
         return new ResponseEntity<>("Book added successfully.", HttpStatus.OK);
     }
-
-    //get all placement tests with the users that books on it
-    public List<ScheduleResponse> getBooks() {
-        List<PlacementTestEntity> placementTests = placementTestRepository.findAll();
-
-        return placementTests.stream()
-                .map(this::mapToScheduleResponse)
-                .collect(Collectors.toList());
     }
-
-    private ScheduleResponse mapToScheduleResponse(PlacementTestEntity placementTestEntity) {
-        List<BookRequestBody> bookRequestBodies = bookRepository.findByPlacementTestId(placementTestEntity.getId())
-                .stream()
-                .map(book -> {
-                    BookRequestBody bookRequestBody = new BookRequestBody();
-                    bookRequestBody.setFirstName(book.getUser().getFirstName());
-                    bookRequestBody.setLastName(book.getUser().getLastName());
-                    bookRequestBody.setPhoneNumber(book.getUser().getPhoneNumber());
-                    return bookRequestBody;
-                })
-                .collect(Collectors.toList());
-
-        return new ScheduleResponse(
-                placementTestEntity.getLanguage(),
-                placementTestEntity.getMaxNum(),
-                placementTestEntity.getDate(),
-                bookRequestBodies
-        );
-    }
-}
-
-
