@@ -2,12 +2,13 @@ package Geeks.languagecenterapp.Model;
 
 import Geeks.languagecenterapp.Model.Enum.GenderEnum;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,34 +17,36 @@ import java.util.List;
 @Table(name = "user")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Data
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false)
     private String firstName;
 
-    @Column(nullable = false)
     private String lastName;
 
+    @Column(nullable = true)
     private String bio;
 
-    @Column(name = "date_of_birth")
-    private Date dob;
 
+    @Column(name = "date_of_bearth" ,nullable = true)
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDateTime dob;
+
+    @Column(nullable = true)
     private GenderEnum gender;
 
+    @Column(nullable = true)
     private String education;
 
+    @Column(nullable = true ,unique = true)
     private String phoneNumber;
 
     @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
     private UserAccountEnum accountType;
@@ -79,6 +82,9 @@ public class UserEntity {
 
     @OneToMany(targetEntity = AttendanceEntity.class ,mappedBy ="user" ,orphanRemoval = true)
     private List<AttendanceEntity> AttendanceList ;
+
+    @OneToMany(targetEntity = MarkEntity.class ,mappedBy ="user" ,orphanRemoval = true)
+    private List<MarkEntity> marks ;
 
 
 
