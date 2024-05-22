@@ -1,5 +1,9 @@
 package Geeks.languagecenterapp.Model.Enum;
 
 public enum UserAccountEnum {
-Guest,USER,TEACHER,ADMIN,SECRETARY
+    USER,
+    TEACHER,
+    ADMIN,
+    SECRETARY,
+    GUEST
 }
