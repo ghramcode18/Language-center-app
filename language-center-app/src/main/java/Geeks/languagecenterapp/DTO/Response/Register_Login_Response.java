@@ -3,6 +3,7 @@ package Geeks.languagecenterapp.DTO.Response;
 import Geeks.languagecenterapp.Model.Enum.GenderEnum;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -21,7 +22,7 @@ public class Register_Login_Response {
 
     private String bio;
 
-    private LocalDateTime dob;
+    private LocalDate dob;
 
     private String education;
 

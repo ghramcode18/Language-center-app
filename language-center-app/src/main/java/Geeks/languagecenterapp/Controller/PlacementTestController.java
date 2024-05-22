@@ -1,6 +1,6 @@
 package Geeks.languagecenterapp.Controller;
-import Geeks.languagecenterapp.DTO.Request.BookRequestBody;
-import Geeks.languagecenterapp.DTO.Request.PlacementTestRequestBody;
+import Geeks.languagecenterapp.DTO.Request.BookRequest;
+import Geeks.languagecenterapp.DTO.Request.PlacementTestRequest;
 import Geeks.languagecenterapp.DTO.Response.ScheduleResponse;
 import Geeks.languagecenterapp.Model.PlacementTestEntity;
 import Geeks.languagecenterapp.Service.PlacementTestService;
@@ -16,12 +16,12 @@ public class PlacementTestController {
     private PlacementTestService placementTestService;
     //Create placement test
     @PostMapping("/add")
-    public ResponseEntity addPlacementTest(@RequestBody PlacementTestRequestBody body){
+    public ResponseEntity addPlacementTest(@RequestBody PlacementTestRequest body){
         return placementTestService.add(body);
     }
     //update placement test
     @PostMapping("/update/{id}")
-    public ResponseEntity updatePlacementTest(@PathVariable("id") int id ,@RequestBody PlacementTestRequestBody body){
+    public ResponseEntity updatePlacementTest(@PathVariable("id") int id ,@RequestBody PlacementTestRequest body){
         return placementTestService.update(body, id);
     }
     //delete placement test
@@ -46,7 +46,7 @@ public class PlacementTestController {
     }
     //book a placement test
     @PostMapping("/book/{placementId}")
-    public ResponseEntity bookPlacementTest(@PathVariable("placementId") int id ,@RequestBody BookRequestBody body){
+    public ResponseEntity bookPlacementTest(@PathVariable("placementId") int id ,@RequestBody BookRequest body){
         return placementTestService.book(body,id);
     }
     //return All placement test and all the books

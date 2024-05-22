@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Builder
@@ -32,7 +32,7 @@ public class UserEntity {
 
     @Column(name = "date_of_birth")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime dob;
+    private LocalDate dob;
 
     private GenderEnum gender;
 

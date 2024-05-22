@@ -1,6 +1,6 @@
 package Geeks.languagecenterapp.Service;
-import Geeks.languagecenterapp.DTO.Request.BookRequestBody;
-import Geeks.languagecenterapp.DTO.Request.PlacementTestRequestBody;
+import Geeks.languagecenterapp.DTO.Request.BookRequest;
+import Geeks.languagecenterapp.DTO.Request.PlacementTestRequest;
 import Geeks.languagecenterapp.DTO.Response.ScheduleResponse;
 import Geeks.languagecenterapp.Model.BookEntity;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
@@ -29,7 +29,7 @@ public class PlacementTestService {
     private UserRepository userRepository;
 
     //Add Placement Test by admin and return ok , return bad request response otherwise
-    public ResponseEntity add(PlacementTestRequestBody RequestBody) {
+    public ResponseEntity add(PlacementTestRequest RequestBody) {
         try {
             PlacementTestEntity placementTest = new PlacementTestEntity();
             placementTest.setLanguage(RequestBody.getLanguage());
@@ -43,7 +43,7 @@ public class PlacementTestService {
     }
 
     //Search for placement test by id ...if found -> update info ...else return not found response
-    public ResponseEntity update(PlacementTestRequestBody RequestBody, int id) {
+    public ResponseEntity update(PlacementTestRequest RequestBody, int id) {
         Optional<PlacementTestEntity> placementTest = placementTestRepository.findById(id);
         if(placementTest.isPresent()) {
             placementTest.get().setLanguage(RequestBody.getLanguage());
@@ -82,7 +82,7 @@ public class PlacementTestService {
     }
 
     //Book a placement test
-    public ResponseEntity book(BookRequestBody RequestBody , int id) {
+    public ResponseEntity book(BookRequest RequestBody , int id) {
 
         Optional<PlacementTestEntity> placementTest = placementTestRepository.findById(id);
 
@@ -139,14 +139,14 @@ public class PlacementTestService {
     }
 
     private ScheduleResponse mapToScheduleResponse(PlacementTestEntity placementTestEntity) {
-        List<BookRequestBody> bookRequestBodies = bookRepository.findByPlacementTestId(placementTestEntity.getId())
+        List<BookRequest> bookRequestBodies = bookRepository.findByPlacementTestId(placementTestEntity.getId())
                 .stream()
                 .map(book -> {
-                    BookRequestBody bookRequestBody = new BookRequestBody();
-                    bookRequestBody.setFirstName(book.getUser().getFirstName());
-                    bookRequestBody.setLastName(book.getUser().getLastName());
-                    bookRequestBody.setPhoneNumber(book.getUser().getPhoneNumber());
-                    return bookRequestBody;
+                    BookRequest bookRequest = new BookRequest();
+                    bookRequest.setFirstName(book.getUser().getFirstName());
+                    bookRequest.setLastName(book.getUser().getLastName());
+                    bookRequest.setPhoneNumber(book.getUser().getPhoneNumber());
+                    return bookRequest;
                 })
                 .collect(Collectors.toList());
 

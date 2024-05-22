@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PlacementTestRequestBody {
+public class PlacementTestRequest {
     private String language;
 
     private int maxNum;

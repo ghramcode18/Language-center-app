@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class BookRequestBody {
+public class BookRequest {
 
     private String firstName;
 

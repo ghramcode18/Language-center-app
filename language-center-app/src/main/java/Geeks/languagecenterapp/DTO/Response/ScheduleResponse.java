@@ -1,6 +1,6 @@
 package Geeks.languagecenterapp.DTO.Response;
 
-import Geeks.languagecenterapp.DTO.Request.BookRequestBody;
+import Geeks.languagecenterapp.DTO.Request.BookRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,5 +19,5 @@ public class ScheduleResponse {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime date;
 
-    private List<BookRequestBody> books;
+    private List<BookRequest> books;
 }
