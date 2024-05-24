@@ -43,13 +43,13 @@ public class UserController {
     @GetMapping("/showTeachers")
     public List<UserEntity> getTeachers (@PathVariable String accountType) throws Exception {
         if(accountType.equals(UserAccountEnum.TEACHER))
-            return userService.getUsers(accountType) ;
+            return userService.getUsers(UserAccountEnum.TEACHER) ;
         else throw new Exception("please write a valid type");
 
     }  @GetMapping("/showStudents")
     public List<UserEntity> getStudent (@PathVariable  String accountType) throws Exception {
         if(accountType.equals(UserAccountEnum.USER))
-            return userService.getUsers(accountType) ;
+            return userService.getUsers(UserAccountEnum.USER) ;
         else throw new Exception("please write a valid type");
     }
 }

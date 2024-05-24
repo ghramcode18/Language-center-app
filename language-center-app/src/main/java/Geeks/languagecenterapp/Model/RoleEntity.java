@@ -1,6 +1,7 @@
 package Geeks.languagecenterapp.Model;
 
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,10 +21,11 @@ public class RoleEntity {
 
     private UserAccountEnum role;
 
-    @OneToMany(targetEntity = UserRoleEntity.class ,mappedBy ="role" ,orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserRoleEntity> userRoles ;
-
-    @OneToMany(targetEntity = RolePermissionEntity.class ,mappedBy ="" ,orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<RolePermissionEntity> userPermissions ;
 
 }

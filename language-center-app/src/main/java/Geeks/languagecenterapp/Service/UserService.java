@@ -114,7 +114,7 @@ public class UserService {
         return postRepository.findByType(type);
     }
 
-    public List <UserEntity> getUsers(String accountType) {
+    public List <UserEntity> getUsers(UserAccountEnum accountType) {
         return userRepository.findByAccountType(accountType);
     }
 }

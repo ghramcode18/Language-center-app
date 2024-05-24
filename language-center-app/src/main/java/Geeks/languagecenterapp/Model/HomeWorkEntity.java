@@ -1,5 +1,6 @@
 package Geeks.languagecenterapp.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,12 +16,14 @@ public class HomeWorkEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(targetEntity = UserEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "userId", nullable = true)
     private UserEntity user;
 
-    @ManyToOne(targetEntity = CourseEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "courseId", nullable = true)
     private CourseEntity course;
 
     private String media;

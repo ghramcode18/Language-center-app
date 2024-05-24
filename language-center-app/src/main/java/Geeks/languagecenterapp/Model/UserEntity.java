@@ -52,48 +52,58 @@ public class UserEntity {
     private boolean isActive;
 
 
-    @Getter(AccessLevel.NONE)
-    @OneToMany(targetEntity = TokenEntity.class ,mappedBy ="user" ,orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<TokenEntity> tokens ;
 
-    @Getter(AccessLevel.NONE)
-    @OneToMany(targetEntity = ImageEntity.class ,mappedBy ="user" ,orphanRemoval = true)
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ImageEntity> images ;
 
-    @Getter(AccessLevel.NONE)
-    @OneToMany(targetEntity = NotificationEntity.class ,mappedBy ="user" ,orphanRemoval = true)
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<NotificationEntity> notifications ;
 
-    @Getter(AccessLevel.NONE)
-    @OneToMany(targetEntity = UserRoleEntity.class ,mappedBy ="user" ,orphanRemoval = true)
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserRoleEntity> userRoles ;
 
-    @Getter(AccessLevel.NONE)
-    @OneToMany(targetEntity = BookEntity.class ,mappedBy ="user" ,orphanRemoval = true)
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<BookEntity> bookList ;
 
-    @Getter(AccessLevel.NONE)
-    @OneToMany(targetEntity = CourseEntity.class ,mappedBy ="user" ,orphanRemoval = true)
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CourseEntity> courseList ;
 
-    @Getter(AccessLevel.NONE)
-    @OneToMany(targetEntity = EnrollCourseEntity.class ,mappedBy ="user" ,orphanRemoval = true)
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<EnrollCourseEntity> enrolledCourseList ;
 
-    @Getter(AccessLevel.NONE)
-    @OneToMany(targetEntity = FavoriteEntity.class ,mappedBy ="user" ,orphanRemoval = true)
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<FavoriteEntity> favoriteList ;
 
-    @Getter(AccessLevel.NONE)
-    @OneToMany(targetEntity = HomeWorkEntity.class ,mappedBy ="user" ,orphanRemoval = true)
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<HomeWorkEntity> homeWorkList ;
 
-    @Getter(AccessLevel.NONE)
-    @OneToMany(targetEntity = AttendanceEntity.class ,mappedBy ="user" ,orphanRemoval = true)
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<AttendanceEntity> AttendanceList ;
 
-    @Getter(AccessLevel.NONE)
-    @OneToMany(targetEntity = MarkEntity.class ,mappedBy ="user" ,orphanRemoval = true)
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MarkEntity> marks ;
 
 }

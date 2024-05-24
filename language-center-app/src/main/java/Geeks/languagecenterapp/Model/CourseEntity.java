@@ -1,6 +1,7 @@
 package Geeks.languagecenterapp.Model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,12 +21,14 @@ public class CourseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(targetEntity = UserEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "userId", nullable = true)
     private UserEntity user;
 
-    @ManyToOne(targetEntity = ServiceEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "serviceId", nullable = true)
     private ServiceEntity service;
     private String title;
 
@@ -49,25 +52,33 @@ public class CourseEntity {
     private String  level;
 
 
-    @OneToMany(targetEntity = EnrollCourseEntity.class ,mappedBy ="course" ,orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<EnrollCourseEntity> enrolledCourseList ;
 
-    @OneToMany(targetEntity = FavoriteEntity.class ,mappedBy ="course" ,orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<FavoriteEntity> favoriteList ;
 
-    @OneToMany(targetEntity = HomeWorkEntity.class ,mappedBy ="course" ,orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<HomeWorkEntity> homeWorkList ;
 
-    @OneToMany(targetEntity = AttendanceEntity.class ,mappedBy ="course" ,orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<AttendanceEntity> AttendanceList ;
 
-    @OneToMany(targetEntity = CourseDayEntity.class ,mappedBy ="course" ,orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CourseDayEntity> courseDayList ;
 
-    @OneToMany(targetEntity = CourseImageEntity.class ,mappedBy ="course" ,orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CourseImageEntity> courseImageList ;
 
-    @OneToOne(targetEntity = MarkEntity.class ,mappedBy ="course" ,orphanRemoval = true)
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "mark", referencedColumnName = "id")
     private MarkEntity mark;
 
 

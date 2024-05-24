@@ -1,5 +1,6 @@
 package Geeks.languagecenterapp.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,12 +16,14 @@ public class CourseImageEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(targetEntity = CourseEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id" ,nullable = true)
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "courseId", nullable = true)
     private CourseEntity course;
 
-    @ManyToOne(targetEntity = PostEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id" ,nullable = true)
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "postId", nullable = true)
     private PostEntity post;
 
     private String imgUrl;

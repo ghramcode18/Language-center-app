@@ -1,5 +1,6 @@
 package Geeks.languagecenterapp.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +20,8 @@ public class ServiceEntity {
 
     private String name;
 
-    @OneToMany(targetEntity = CourseEntity.class ,mappedBy ="service" ,orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "service", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CourseEntity> courses;
 
 

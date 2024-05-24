@@ -1,5 +1,6 @@
 package Geeks.languagecenterapp.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,8 @@ public class PermissionEntity {
 
     private String description;
 
-    @OneToMany(targetEntity = RolePermissionEntity.class ,mappedBy ="permission" ,orphanRemoval = true)
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "permission", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<RolePermissionEntity> userPermissions; ;
 }

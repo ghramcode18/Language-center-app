@@ -1,5 +1,6 @@
 package Geeks.languagecenterapp.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,11 +16,13 @@ public class RolePermissionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(targetEntity = RoleEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "roleId", nullable = true)
     private RoleEntity role;
 
-    @ManyToOne(targetEntity = PermissionEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "permission_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "permissionId", nullable = true)
     private PermissionEntity permission;
 }

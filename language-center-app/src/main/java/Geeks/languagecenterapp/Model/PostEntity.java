@@ -1,6 +1,7 @@
 package Geeks.languagecenterapp.Model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,12 +23,15 @@ public class PostEntity {
 
     private String title;
 
+    private String type;
+
     private String content;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-    @OneToMany(targetEntity = CourseImageEntity.class ,mappedBy ="post" ,orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CourseImageEntity> courseImageList ;
 
 }

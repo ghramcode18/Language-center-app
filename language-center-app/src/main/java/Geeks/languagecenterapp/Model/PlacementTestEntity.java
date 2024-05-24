@@ -26,7 +26,8 @@ public class PlacementTestEntity {
     private int maxNum;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime date;
+
     @JsonIgnore
-    @OneToMany(targetEntity = BookEntity.class ,mappedBy ="placementTest" ,orphanRemoval = true)
+    @OneToMany(mappedBy = "placementTest", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<BookEntity> bookList ;
 }
