@@ -28,6 +28,10 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+!**/src/main/resources
 
 ### VS Code ###
 .vscode/
+target
+.mvn
+.gitignore
