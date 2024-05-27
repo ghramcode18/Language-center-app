@@ -1,14 +1,18 @@
 package Geeks.languagecenterapp.Service;
 import Geeks.languagecenterapp.DTO.Request.BookRequest;
 import Geeks.languagecenterapp.DTO.Request.PlacementTestRequest;
+import Geeks.languagecenterapp.DTO.Request.PostRequest;
 import Geeks.languagecenterapp.DTO.Response.ScheduleResponse;
 import Geeks.languagecenterapp.Model.BookEntity;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Model.PlacementTestEntity;
+import Geeks.languagecenterapp.Model.PostEntity;
 import Geeks.languagecenterapp.Model.UserEntity;
 import Geeks.languagecenterapp.Repository.BookRepository;
 import Geeks.languagecenterapp.Repository.PlacementTestRepository;
 import Geeks.languagecenterapp.Repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,43 +33,87 @@ public class PlacementTestService {
     private UserRepository userRepository;
 
     //Add Placement Test by admin and return ok , return bad request response otherwise
-    public ResponseEntity add(PlacementTestRequest RequestBody) {
+    public ResponseEntity<Object> add(PlacementTestRequest RequestBody) throws JsonProcessingException {
         try {
             PlacementTestEntity placementTest = new PlacementTestEntity();
             placementTest.setLanguage(RequestBody.getLanguage());
             placementTest.setMaxNum(RequestBody.getMaxNum());
             placementTest.setDate(RequestBody.getDate());
             placementTestRepository.save(placementTest);
+
+            // Create a response object with the success message
+            String successMessage = "Placement test added successfully.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Some thing went Wrong.", HttpStatus.BAD_REQUEST);
+            // Create a response object with the error message
+            String errorMessage = "Something went wrong.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(errorMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>("Placement test added successfully.", HttpStatus.OK);
     }
 
     //Search for placement test by id ...if found -> update info ...else return not found response
-    public ResponseEntity update(PlacementTestRequest RequestBody, int id) {
+    public ResponseEntity<Object> update(PlacementTestRequest RequestBody, int id) throws JsonProcessingException {
         Optional<PlacementTestEntity> placementTest = placementTestRepository.findById(id);
-        if(placementTest.isPresent()) {
-            placementTest.get().setLanguage(RequestBody.getLanguage());
-            placementTest.get().setMaxNum(RequestBody.getMaxNum());
-            placementTest.get().setDate(RequestBody.getDate());
-            placementTestRepository.save(placementTest.get());
+        if (placementTest.isPresent()) {
+            try {
+                placementTest.get().setLanguage(RequestBody.getLanguage());
+                placementTest.get().setMaxNum(RequestBody.getMaxNum());
+                placementTest.get().setDate(RequestBody.getDate());
+                placementTestRepository.save(placementTest.get());
+
+                // Create a response object with the success message
+                String successMessage = "Placement test updated successfully.";
+                ObjectMapper objectMapper = new ObjectMapper();
+                String jsonResponse = objectMapper.writeValueAsString(successMessage);
+                return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            } catch (Exception e) {
+                // Create a response object with the error message
+                String errorMessage = "Something went wrong.";
+                ObjectMapper objectMapper = new ObjectMapper();
+                String jsonResponse = objectMapper.writeValueAsString(errorMessage);
+                return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            // Create a response object with the not found message
+            String notFoundMessage = "Placement test not found.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(notFoundMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
         }
-        else {
-            return new ResponseEntity<>("Placement test not found..", HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>("Placement test updated successfully.", HttpStatus.OK);
     }
 
     //Search for placement test by id ...if found -> delete info ...else return not found response
-    public ResponseEntity delete(int id){
+    public ResponseEntity<Object> delete(int id) throws JsonProcessingException {
         Optional<PlacementTestEntity> placementTest = placementTestRepository.findById(id);
-        if(placementTest.isPresent()) {
-            placementTestRepository.delete(placementTest.get());
-            return new ResponseEntity<>("Placement test deleted successfully.", HttpStatus.OK);
+        if (placementTest.isPresent()) {
+            try {
+                placementTestRepository.delete(placementTest.get());
+
+                // Create a response object with the success message
+                String successMessage = "Placement test deleted successfully.";
+                ObjectMapper objectMapper = new ObjectMapper();
+                String jsonResponse = objectMapper.writeValueAsString(successMessage);
+                return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            } catch (Exception e) {
+                // Create a response object with the error message
+                String errorMessage = "Something went wrong.";
+                ObjectMapper objectMapper = new ObjectMapper();
+                String jsonResponse = objectMapper.writeValueAsString(errorMessage);
+                return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            // Create a response object with the not found message
+            String notFoundMessage = "Placement test not found.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(notFoundMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>("Placement test not found.", HttpStatus.NOT_FOUND);
     }
+
     //get all placement tests
     public List<PlacementTestEntity> getAll() {
         return placementTestRepository.findAll();
@@ -82,13 +130,17 @@ public class PlacementTestService {
     }
 
     //Book a placement test
-    public ResponseEntity book(BookRequest RequestBody , int id) {
+    public ResponseEntity<Object> book(BookRequest RequestBody , int id) throws JsonProcessingException {
 
         Optional<PlacementTestEntity> placementTest = placementTestRepository.findById(id);
 
         // Check if the placement test exists
         if (!placementTest.isPresent()) {
-            return new ResponseEntity<>("Placement test not found.", HttpStatus.NOT_FOUND);
+            // Create a response object with the success message
+            String successMessage = "Placement test not found.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
         }
 
         // Search for user by phone number
@@ -111,13 +163,21 @@ public class PlacementTestService {
         // Check if the booking already exists for this user and placement test
         Optional<BookEntity> existingBooking = bookRepository.findByUserIdAndPlacementTestId(userEntity.getId(), placementTest.get().getId());
         if (existingBooking.isPresent()) {
-            return new ResponseEntity<>("Book already exists.", HttpStatus.CONFLICT);
+            // Create a response object with the success message
+            String successMessage = "Book already exists.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.CONFLICT);
         }
 
         // Check the current number of bookings for this placement test
         int currentBookings = bookRepository.countByPlacementTestId(placementTest.get().getId());
         if (currentBookings >= placementTest.get().getMaxNum()) {
-            return new ResponseEntity<>("The maximum number of bookings for this placement test has been reached.", HttpStatus.CONFLICT);
+            // Create a response object with the success message
+            String successMessage = "The maximum number of bookings for this placement test has been reached.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.CONFLICT);
         }
 
         // Create and save the new booking
@@ -126,7 +186,11 @@ public class PlacementTestService {
         book.setBookingDate(LocalDateTime.now());
         bookRepository.save(book);
 
-        return new ResponseEntity<>("Book added successfully.", HttpStatus.OK);
+        // Create a response object with the success message
+        String successMessage = "Book added successfully.";
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(successMessage);
+        return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
     }
 
     //get all placement tests with the users that books on it
