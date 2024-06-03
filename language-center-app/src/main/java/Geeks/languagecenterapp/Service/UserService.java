@@ -4,10 +4,14 @@ import Geeks.languagecenterapp.CustomExceptions.CustomException;
 import Geeks.languagecenterapp.DTO.Request.LoginRequest;
 import Geeks.languagecenterapp.DTO.Request.RegisterRequest;
 import Geeks.languagecenterapp.DTO.Response.Register_Login_Response;
+import Geeks.languagecenterapp.Model.CourseEntity;
+import Geeks.languagecenterapp.Model.EnrollCourseEntity;
 import Geeks.languagecenterapp.Model.Enum.PostEnum;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Model.PostEntity;
 import Geeks.languagecenterapp.Model.UserEntity;
+import Geeks.languagecenterapp.Repository.CourseRepository;
+import Geeks.languagecenterapp.Repository.EnrollCourseRepository;
 import Geeks.languagecenterapp.Repository.PostRepository;
 import Geeks.languagecenterapp.Repository.UserRepository;
 //import Geeks.languagecenterapp.Service.SecurityServices.EncryptionService;
@@ -39,6 +43,8 @@ public class UserService {
     private final JWTService jwtService;
     @Autowired
     private final TokenService tokenService;
+    @Autowired
+    private final EnrollCourseRepository enrollCourseRepository;
 
 
     public Register_Login_Response registerUser(RegisterRequest registerRequest) throws CustomException {
@@ -117,5 +123,14 @@ public class UserService {
 
     public List <UserEntity> getUsers(UserAccountEnum accountType) {
         return userRepository.findByAccountType(accountType);
+    }
+
+    public List<CourseEntity> getEnrolledCourses(UserEntity user) {
+        List<EnrollCourseEntity> enrollments = enrollCourseRepository.findByUser(user);
+        List<CourseEntity> courses = new ArrayList<>();
+        for (EnrollCourseEntity enrollment : enrollments) {
+            courses.add(enrollment.getCourse());
+        }
+        return courses;
     }
 }

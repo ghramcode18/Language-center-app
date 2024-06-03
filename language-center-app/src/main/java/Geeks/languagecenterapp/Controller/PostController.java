@@ -1,9 +1,5 @@
 package Geeks.languagecenterapp.Controller;
-
-import Geeks.languagecenterapp.DTO.Request.PlacementTestRequest;
 import Geeks.languagecenterapp.DTO.Request.PostRequest;
-import Geeks.languagecenterapp.Model.Enum.PostEnum;
-import Geeks.languagecenterapp.Model.PlacementTestEntity;
 import Geeks.languagecenterapp.Model.PostEntity;
 import Geeks.languagecenterapp.Service.PostService;
 import com.fasterxml.jackson.core.JsonProcessingException;

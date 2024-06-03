@@ -1,5 +1,6 @@
 package Geeks.languagecenterapp.Controller;
 
+import Geeks.languagecenterapp.Model.CourseEntity;
 import Geeks.languagecenterapp.Model.Enum.PostEnum;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Model.PostEntity;
@@ -7,7 +8,6 @@ import Geeks.languagecenterapp.Model.UserEntity;
 import Geeks.languagecenterapp.Service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +23,10 @@ public class UserController {
     @GetMapping("/profile")
       public UserEntity getUserProfile (@AuthenticationPrincipal UserEntity user){
         return user ;
+    }
+    @GetMapping("/enrolled-courses")
+    public List<CourseEntity> getEnrolledCourses(@AuthenticationPrincipal UserEntity user) {
+        return userService.getEnrolledCourses(user);
     }
 
     @GetMapping("/showTeachers")

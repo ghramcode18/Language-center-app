@@ -1,10 +1,10 @@
 package Geeks.languagecenterapp.DTO.Request;
 
 import Geeks.languagecenterapp.Model.Enum.PostEnum;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -17,5 +17,6 @@ public class PostRequest {
     private String content;
 
     private PostEnum type;
+
 
 }
