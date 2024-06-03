@@ -1,10 +1,9 @@
 package Geeks.languagecenterapp.Service;
 
 import Geeks.languagecenterapp.DTO.Request.CourseRequest;
-import Geeks.languagecenterapp.Model.CourseEntity;
-import Geeks.languagecenterapp.Model.ServiceEntity;
-import Geeks.languagecenterapp.Model.UserEntity;
+import Geeks.languagecenterapp.Model.*;
 import Geeks.languagecenterapp.Repository.CourseRepository;
+import Geeks.languagecenterapp.Repository.FavoriteRepository;
 import Geeks.languagecenterapp.Repository.ServiceRepository;
 import Geeks.languagecenterapp.Repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,8 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
@@ -25,6 +26,8 @@ public class CourseService {
     private UserRepository userRepository;
     @Autowired
     private ServiceRepository serviceRepository;
+    @Autowired
+    private FavoriteRepository favoriteRepository;
 
 
     //Add Course by admin and return ok , return bad request response otherwise
@@ -141,5 +144,54 @@ public class CourseService {
     public List<CourseEntity> getAll() {
         return courseRepository.findAll();
     }
+
+
+    // Add course to favorite
+    public ResponseEntity<Object> addToFavorite(int courseId, UserEntity user) throws JsonProcessingException {
+        Optional<CourseEntity> course = courseRepository.findById(courseId);
+        if (course.isPresent()) {
+            FavoriteEntity favorite = new FavoriteEntity();
+            favorite.setUser(user);
+            favorite.setCourse(course.get());
+            favoriteRepository.save(favorite);
+
+            String successMessage = "Course added to favorites.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        } else {
+            String notFoundMessage = "Course not found.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(notFoundMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Remove course from favorite
+    public ResponseEntity<Object> deleteFromFavorite(int courseId, UserEntity user) throws JsonProcessingException {
+        Optional<CourseEntity> course = courseRepository.findById(courseId);
+        if (course.isPresent()) {
+            FavoriteEntity favorite = favoriteRepository.findByUserAndCourse(user, course.get());
+            if (favorite != null) {
+                favoriteRepository.delete(favorite);
+
+                String successMessage = "Course removed from favorites.";
+                ObjectMapper objectMapper = new ObjectMapper();
+                String jsonResponse = objectMapper.writeValueAsString(successMessage);
+                return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            } else {
+                String notFoundMessage = "Favorite not found.";
+                ObjectMapper objectMapper = new ObjectMapper();
+                String jsonResponse = objectMapper.writeValueAsString(notFoundMessage);
+                return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+            }
+        } else {
+            String notFoundMessage = "Course not found.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(notFoundMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 }

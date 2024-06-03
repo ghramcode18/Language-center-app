@@ -4,16 +4,10 @@ import Geeks.languagecenterapp.CustomExceptions.CustomException;
 import Geeks.languagecenterapp.DTO.Request.LoginRequest;
 import Geeks.languagecenterapp.DTO.Request.RegisterRequest;
 import Geeks.languagecenterapp.DTO.Response.Register_Login_Response;
-import Geeks.languagecenterapp.Model.CourseEntity;
-import Geeks.languagecenterapp.Model.EnrollCourseEntity;
+import Geeks.languagecenterapp.Model.*;
 import Geeks.languagecenterapp.Model.Enum.PostEnum;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
-import Geeks.languagecenterapp.Model.PostEntity;
-import Geeks.languagecenterapp.Model.UserEntity;
-import Geeks.languagecenterapp.Repository.CourseRepository;
-import Geeks.languagecenterapp.Repository.EnrollCourseRepository;
-import Geeks.languagecenterapp.Repository.PostRepository;
-import Geeks.languagecenterapp.Repository.UserRepository;
+import Geeks.languagecenterapp.Repository.*;
 //import Geeks.languagecenterapp.Service.SecurityServices.EncryptionService;
 import Geeks.languagecenterapp.Service.SecurityServices.EncryptionService;
 import Geeks.languagecenterapp.Service.SecurityServices.JWTService;
@@ -45,6 +39,8 @@ public class UserService {
     private final TokenService tokenService;
     @Autowired
     private final EnrollCourseRepository enrollCourseRepository;
+    @Autowired
+    private final FavoriteRepository favoriteRepository;
 
 
     public Register_Login_Response registerUser(RegisterRequest registerRequest) throws CustomException {
@@ -133,4 +129,14 @@ public class UserService {
         }
         return courses;
     }
+    // Get favorite courses of a user
+    public List<CourseEntity> getFavoriteCourses(UserEntity user)  {
+        List<FavoriteEntity> favoriteCourses = favoriteRepository.findByUser(user);
+        List<CourseEntity> courses = new ArrayList<>();
+        for (FavoriteEntity favorite : favoriteCourses) {
+            courses.add(favorite.getCourse());
+        }
+        return courses;
+    }
+
 }
