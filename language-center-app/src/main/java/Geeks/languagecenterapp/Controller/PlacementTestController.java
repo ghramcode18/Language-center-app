@@ -4,29 +4,30 @@ import Geeks.languagecenterapp.DTO.Request.PlacementTestRequest;
 import Geeks.languagecenterapp.DTO.Response.ScheduleResponse;
 import Geeks.languagecenterapp.Model.PlacementTestEntity;
 import Geeks.languagecenterapp.Service.PlacementTestService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
         import java.util.List;
 
 @RestController
-@RequestMapping("/placementTest")
+@RequestMapping("/api/placementTest")
 public class PlacementTestController {
     @Autowired
     private PlacementTestService placementTestService;
     //Create placement test
     @PostMapping("/add")
-    public ResponseEntity addPlacementTest(@RequestBody PlacementTestRequest body){
+    public ResponseEntity<Object> addPlacementTest(@RequestBody PlacementTestRequest body) throws JsonProcessingException {
         return placementTestService.add(body);
     }
     //update placement test
     @PostMapping("/update/{id}")
-    public ResponseEntity updatePlacementTest(@PathVariable("id") int id ,@RequestBody PlacementTestRequest body){
+    public ResponseEntity<Object> updatePlacementTest(@PathVariable("id") int id , @RequestBody PlacementTestRequest body) throws JsonProcessingException {
         return placementTestService.update(body, id);
     }
     //delete placement test
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deletePlacementTest(@PathVariable("id") int id ){
+    public ResponseEntity<Object> deletePlacementTest(@PathVariable("id") int id ) throws JsonProcessingException {
         return placementTestService.delete(id);
     }
     //get All placement test
@@ -46,7 +47,7 @@ public class PlacementTestController {
     }
     //book a placement test
     @PostMapping("/book/{placementId}")
-    public ResponseEntity bookPlacementTest(@PathVariable("placementId") int id ,@RequestBody BookRequest body){
+    public ResponseEntity<Object> bookPlacementTest(@PathVariable("placementId") int id , @RequestBody BookRequest body) throws JsonProcessingException {
         return placementTestService.book(body,id);
     }
     //return All placement test and all the books

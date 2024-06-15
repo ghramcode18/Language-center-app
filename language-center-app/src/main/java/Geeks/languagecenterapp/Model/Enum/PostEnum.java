@@ -1,5 +1,5 @@
 package Geeks.languagecenterapp.Model.Enum;
 
-public enum Post {
+public enum PostEnum {
     ADS,EVENT
 }

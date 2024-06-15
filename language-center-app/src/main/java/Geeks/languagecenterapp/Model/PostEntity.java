@@ -1,5 +1,6 @@
 package Geeks.languagecenterapp.Model;
 
+import Geeks.languagecenterapp.Model.Enum.PostEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -23,7 +24,7 @@ public class PostEntity {
 
     private String title;
 
-    private String type;
+    private PostEnum type;
 
     private String content;
 
