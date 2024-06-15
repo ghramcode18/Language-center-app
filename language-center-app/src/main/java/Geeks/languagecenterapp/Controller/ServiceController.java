@@ -1,9 +1,7 @@
 package Geeks.languagecenterapp.Controller;
 
 import Geeks.languagecenterapp.DTO.Request.ServiceRequest;
-import Geeks.languagecenterapp.DTO.Response.ScheduleResponse;
 import Geeks.languagecenterapp.DTO.Response.ServiceWithCourseResponse;
-import Geeks.languagecenterapp.Model.PostEntity;
 import Geeks.languagecenterapp.Model.ServiceEntity;
 import Geeks.languagecenterapp.Service.ServiceService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -45,4 +43,5 @@ public class ServiceController {
         List<ServiceWithCourseResponse> services = serviceService.getAllWithCourses();
         return ResponseEntity.ok(services);
     }
+
 }

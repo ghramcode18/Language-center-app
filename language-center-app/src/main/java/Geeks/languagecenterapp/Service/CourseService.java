@@ -2,10 +2,7 @@ package Geeks.languagecenterapp.Service;
 
 import Geeks.languagecenterapp.DTO.Request.CourseRequest;
 import Geeks.languagecenterapp.Model.*;
-import Geeks.languagecenterapp.Repository.CourseRepository;
-import Geeks.languagecenterapp.Repository.FavoriteRepository;
-import Geeks.languagecenterapp.Repository.ServiceRepository;
-import Geeks.languagecenterapp.Repository.UserRepository;
+import Geeks.languagecenterapp.Repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 @Service
 public class CourseService {
@@ -28,6 +26,8 @@ public class CourseService {
     private ServiceRepository serviceRepository;
     @Autowired
     private FavoriteRepository favoriteRepository;
+    @Autowired
+    private EnrollCourseRepository enrollCourseRepository;
 
 
     //Add Course by admin and return ok , return bad request response otherwise
@@ -193,5 +193,25 @@ public class CourseService {
         }
     }
 
+    // Get Course Rate
+    public ResponseEntity<Object> getRate(int courseId) throws JsonProcessingException {
+        Optional<CourseEntity> courseOpt = courseRepository.findById(courseId);
 
+        if (courseOpt.isPresent()) {
+            List<EnrollCourseEntity> enrollments = enrollCourseRepository.findByCourseId(courseId);
+
+            // Calculate average rate
+            Double averageRate = enrollments.stream()
+                    .flatMapToDouble(e -> DoubleStream.of(e.getRate()))
+                    .average()
+                    .orElse(0.0); // Return 0.0 if there are no rates
+
+            // Build response
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(averageRate);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
+        }
+    }
 }

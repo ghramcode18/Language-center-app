@@ -33,6 +33,8 @@ public class EnrollCourseEntity {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime enrollDate;
 
+    private float rate;
+
     private String marks;
 
     private boolean isOrderCertification;

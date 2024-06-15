@@ -1,5 +1,8 @@
 package Geeks.languagecenterapp.Controller;
 
+import Geeks.languagecenterapp.DTO.Request.BookRequest;
+import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
+import Geeks.languagecenterapp.DTO.Request.RateRequest;
 import Geeks.languagecenterapp.Model.CourseEntity;
 import Geeks.languagecenterapp.Model.Enum.PostEnum;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
@@ -32,9 +35,19 @@ public class UserController {
         return userService.getEnrolledCourses(user);
     }
     //TODO :api need test
-    @GetMapping("/favorite")
+    @GetMapping("/favorite-courses")
     public List<CourseEntity> getFavoriteCourses(@AuthenticationPrincipal UserEntity user) throws JsonProcessingException {
         return userService.getFavoriteCourses(user);
+    }
+    // Enroll Course
+    @PostMapping("/enroll-course/{courseId}")
+    public ResponseEntity<Object> enrollCourse(@PathVariable("courseId") int id , @RequestBody EnrollRequest body) throws JsonProcessingException {
+        return userService.enroll(body,id);
+    }
+    // Rate Course
+    @PostMapping("/rate-course/{courseId}")
+    public ResponseEntity<Object> rateCourse(@PathVariable("courseId") int id , @RequestBody RateRequest body) throws JsonProcessingException {
+        return userService.rate(body,id);
     }
 
     @GetMapping("/showTeachers")
