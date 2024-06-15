@@ -1,9 +1,7 @@
 package Geeks.languagecenterapp.Controller;
 
 import Geeks.languagecenterapp.DTO.Request.ServiceRequest;
-import Geeks.languagecenterapp.DTO.Response.ScheduleResponse;
 import Geeks.languagecenterapp.DTO.Response.ServiceWithCourseResponse;
-import Geeks.languagecenterapp.Model.PostEntity;
 import Geeks.languagecenterapp.Model.ServiceEntity;
 import Geeks.languagecenterapp.Service.ServiceService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,24 +16,28 @@ import java.util.List;
 public class ServiceController {
     @Autowired
     private ServiceService serviceService;
+
     //Create Service
     @PostMapping("/add")
     public ResponseEntity<Object> addService(@RequestBody ServiceRequest body) throws JsonProcessingException {
         return serviceService.add(body);
     }
+
     //update Service
     @PostMapping("/update/{id}")
-    public ResponseEntity<Object>updateService(@PathVariable("id") int id , @RequestBody ServiceRequest body)throws JsonProcessingException{
+    public ResponseEntity<Object> updateService(@PathVariable("id") int id, @RequestBody ServiceRequest body) throws JsonProcessingException {
         return serviceService.update(body, id);
     }
+
     //delete Service
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Object> deleteService(@PathVariable("id") int id ) throws JsonProcessingException {
+    public ResponseEntity<Object> deleteService(@PathVariable("id") int id) throws JsonProcessingException {
         return serviceService.delete(id);
     }
+
     //get All Services
     @GetMapping("/get/all")
-    public ResponseEntity<List<ServiceEntity>> getAllServices(){
+    public ResponseEntity<List<ServiceEntity>> getAllServices() {
         return ResponseEntity.ok(serviceService.getAll());
     }
 
@@ -45,4 +47,5 @@ public class ServiceController {
         List<ServiceWithCourseResponse> services = serviceService.getAllWithCourses();
         return ResponseEntity.ok(services);
     }
+
 }
