@@ -41,15 +41,17 @@ public class UserController {
     public List<CourseEntity> getFavoriteCourses(@AuthenticationPrincipal UserEntity user) throws JsonProcessingException {
         return userService.getFavoriteCourses(user);
     }
+
     // Enroll Course
     @PostMapping("/enroll-course/{courseId}")
-    public ResponseEntity<Object> enrollCourse(@PathVariable("courseId") int id , @RequestBody EnrollRequest body) throws JsonProcessingException {
-        return userService.enroll(body,id);
+    public ResponseEntity<Object> enrollCourse(@PathVariable("courseId") int id, @RequestBody EnrollRequest body) throws JsonProcessingException {
+        return userService.enroll(body, id);
     }
+
     // Rate Course
     @PostMapping("/rate-course/{courseId}")
-    public ResponseEntity<Object> rateCourse(@PathVariable("courseId") int id , @RequestBody RateRequest body) throws JsonProcessingException {
-        return userService.rate(body,id);
+    public ResponseEntity<Object> rateCourse(@PathVariable("courseId") int id, @RequestBody RateRequest body) throws JsonProcessingException {
+        return userService.rate(body, id);
     }
 
     @GetMapping("/showTeachers")

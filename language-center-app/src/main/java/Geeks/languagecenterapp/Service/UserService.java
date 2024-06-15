@@ -1,7 +1,9 @@
 package Geeks.languagecenterapp.Service;
 
 import Geeks.languagecenterapp.CustomExceptions.CustomException;
+import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
 import Geeks.languagecenterapp.DTO.Request.LoginRequest;
+import Geeks.languagecenterapp.DTO.Request.RateRequest;
 import Geeks.languagecenterapp.DTO.Request.RegisterRequest;
 import Geeks.languagecenterapp.DTO.Response.Register_Login_Response;
 import Geeks.languagecenterapp.DTO.Response.UserProfileResponse;
@@ -11,10 +13,14 @@ import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Repository.*;
 import Geeks.languagecenterapp.Service.SecurityServices.EncryptionService;
 import Geeks.languagecenterapp.Service.SecurityServices.JWTService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
@@ -23,11 +29,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 @AllArgsConstructor
-
 public class UserService {
 
     @Autowired
@@ -35,6 +41,9 @@ public class UserService {
 
     @Autowired
     private final ImageRepository imageRepository;
+
+    @Autowired
+    private final CourseRepository courseRepository;
 
     @Autowired
     private final EncryptionService encryptionService;
@@ -192,6 +201,76 @@ public class UserService {
             courses.add(favorite.getCourse());
         }
         return courses;
+    }
+
+    //Enroll in a course
+    public ResponseEntity<Object> enroll(EnrollRequest RequestBody, int id) throws JsonProcessingException {
+
+        Optional<CourseEntity> course = courseRepository.findById(id);
+        Optional<UserEntity> student = userRepository.findById(RequestBody.getStd_id());
+        // Check if the placement test exists
+        if (!course.isPresent()) {
+            // Create a response object with the success message
+            String successMessage = "Course not found.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+        }
+
+        // Check if the booking already exists for this student and course
+        Optional<EnrollCourseEntity> existingBooking = enrollCourseRepository.findByUserIdAndCourseId(student.get().getId(), course.get().getId());
+        if (existingBooking.isPresent()) {
+            // Create a response object with the success message
+            String successMessage = "enroll already exists.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.CONFLICT);
+        }
+
+        // Create and save the new enroll
+        EnrollCourseEntity enrollCourse = new EnrollCourseEntity();
+        enrollCourse.setUser(student.get());
+        enrollCourse.setCourse(course.get());
+        enrollCourse.setEnrollDate(LocalDateTime.now());
+        enrollCourseRepository.save(enrollCourse);
+
+        // Create a response object with the success message
+        String successMessage = "Enrolled added successfully.";
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(successMessage);
+        return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+    }
+
+    //rate course
+    public ResponseEntity<Object> rate(RateRequest body, int id) throws JsonProcessingException {
+        Optional<CourseEntity> course = courseRepository.findById(id);
+        Optional<UserEntity> student = userRepository.findById(body.getStd_id());
+        // Check if the placement test exists
+        if (!course.isPresent()) {
+            // Create a response object with the success message
+            String successMessage = "Course not found.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+        }
+
+        // Check if the booking already exists for this student and course
+        Optional<EnrollCourseEntity> existingBooking = enrollCourseRepository.findByUserIdAndCourseId(student.get().getId(), course.get().getId());
+        if (existingBooking.isPresent()) {
+            existingBooking.get().setRate(body.getRate());
+            enrollCourseRepository.save(existingBooking.get());
+            // Create a response object with the success message
+            String successMessage = "Rate added successfully....Thank you :)";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        }
+
+        // Create a response object with the success message
+        String successMessage = "Something went wrong :(";
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(successMessage);
+        return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
     }
 
 }
