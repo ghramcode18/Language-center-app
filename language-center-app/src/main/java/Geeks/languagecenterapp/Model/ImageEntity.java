@@ -13,18 +13,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ImageEntity {
+
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "userId", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
     private UserEntity user;
 
     private ImageEnum type;
 
-    @Column(nullable = true)
     private String CrtName;
 
     private String imgUrl;

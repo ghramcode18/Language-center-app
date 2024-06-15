@@ -24,7 +24,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity register(@Valid @RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(@Valid @ModelAttribute RegisterRequest registerRequest) {
         try {
             return new ResponseEntity<>(userService.registerUser(registerRequest), HttpStatus.CREATED);
         } catch (CustomException ex) {
@@ -33,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@Valid @ModelAttribute LoginRequest loginRequest) {
         try {
             return new ResponseEntity<>(userService.loginUser(loginRequest), HttpStatus.OK);
         } catch (CustomException ex) {
@@ -42,8 +42,8 @@ public class AuthController {
     }
 
     @GetMapping("/logout")
-    public ResponseEntity logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        return new ResponseEntity(userService.logout(request, response, authentication), HttpStatus.OK);
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        return new ResponseEntity<>(userService.logout(request, response, authentication), HttpStatus.OK);
     }
 
 }

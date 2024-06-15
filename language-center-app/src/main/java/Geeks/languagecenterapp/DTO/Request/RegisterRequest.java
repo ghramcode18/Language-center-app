@@ -5,11 +5,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+@Setter
 @Getter
 public class RegisterRequest {
 
@@ -36,5 +39,7 @@ public class RegisterRequest {
     private String bio;
 
     private LocalDate dob;
+
+    private MultipartFile image;
 
 }

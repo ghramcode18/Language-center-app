@@ -54,56 +54,56 @@ public class UserEntity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<TokenEntity> tokens ;
+    private List<TokenEntity> tokens;
 
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ImageEntity> images ;
+    private List<ImageEntity> images;
 
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<NotificationEntity> notifications ;
+    private List<NotificationEntity> notifications;
 
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserRoleEntity> userRoles ;
+    private List<UserRoleEntity> userRoles;
 
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<BookEntity> bookList ;
+    private List<BookEntity> bookList;
 
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<CourseEntity> courseList ;
+    private List<CourseEntity> courseList;
 
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<EnrollCourseEntity> enrolledCourseList ;
+    private List<EnrollCourseEntity> enrolledCourseList;
 
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<FavoriteEntity> favoriteList ;
+    private List<FavoriteEntity> favoriteList;
 
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<HomeWorkEntity> homeWorkList ;
+    private List<HomeWorkEntity> homeWorkList;
 
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<AttendanceEntity> AttendanceList ;
+    private List<AttendanceEntity> AttendanceList;
 
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<MarkEntity> marks ;
+    private List<MarkEntity> marks;
 
 }
