@@ -155,7 +155,7 @@ public class UserService {
     }
 
     // Upload Files
-    private static final String UPLOAD_DIR = "C:\\Users\\NAEL PC\\Desktop\\Learning\\SpringBoot\\Projects\\Language-center-app\\language-center-app\\Files";
+    private static final String UPLOAD_DIR = "DIRECTORY_PATH";
 
     private String uploadFile(MultipartFile file) {
         if (file.isEmpty()) {
