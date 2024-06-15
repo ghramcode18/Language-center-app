@@ -6,16 +6,17 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Value;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Table(name = "enrollCourse")
+@Table(name = "userChatRoom")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class EnrollCourseEntity {
+public class UserChatRoomEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -27,18 +28,7 @@ public class EnrollCourseEntity {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "courseId", nullable = true)
-    private CourseEntity course;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime enrollDate;
-
-    private float rate;
-
-    private String marks;
-
-    private boolean isOrderCertification;
-
-    private float rate;
+    @JoinColumn(name = "chatRoomId", nullable = true)
+    private ChatRoomEntity chatRoom;
 
 }

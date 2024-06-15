@@ -8,14 +8,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
-@Table(name = "enrollCourse")
+@Table(name = "userQuiz")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class EnrollCourseEntity {
+public class UserQuizEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -27,18 +27,13 @@ public class EnrollCourseEntity {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "courseId", nullable = true)
-    private CourseEntity course;
+    @JoinColumn(name = "quizId", nullable = true)
+    private QuizEntity quiz;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime enrollDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDateTime assignedAt;
 
-    private float rate;
-
-    private String marks;
-
-    private boolean isOrderCertification;
-
-    private float rate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDateTime completedAt;
 
 }

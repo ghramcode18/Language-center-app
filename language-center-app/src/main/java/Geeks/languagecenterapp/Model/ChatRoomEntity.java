@@ -8,14 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
-@Table(name = "enrollCourse")
+@Table(name = "chatRoom")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class EnrollCourseEntity {
+public class ChatRoomEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -23,22 +22,12 @@ public class EnrollCourseEntity {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "userId", nullable = true)
-    private UserEntity user;
+    private  UserEntity user;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "courseId", nullable = true)
-    private CourseEntity course;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDateTime CreatedAt;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime enrollDate;
-
-    private float rate;
-
-    private String marks;
-
-    private boolean isOrderCertification;
-
-    private float rate;
+    private String name ;
 
 }
+

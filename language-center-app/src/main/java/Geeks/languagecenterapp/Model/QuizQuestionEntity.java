@@ -6,39 +6,30 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Value;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Table(name = "enrollCourse")
+@Table(name = "quizQuestion")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class EnrollCourseEntity {
+public class QuizQuestionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "userId", nullable = true)
-    private UserEntity user;
+    @JoinColumn(name = "quizId", nullable = true)
+    private QuizEntity quiz;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "courseId", nullable = true)
-    private CourseEntity course;
+    @JoinColumn(name = "questionId", nullable = true)
+    private QuestionEntity question;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime enrollDate;
-
-    private float rate;
-
-    private String marks;
-
-    private boolean isOrderCertification;
-
-    private float rate;
 
 }

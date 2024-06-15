@@ -1,9 +1,7 @@
 package Geeks.languagecenterapp.Controller;
 
 import Geeks.languagecenterapp.DTO.Request.CourseRequest;
-import Geeks.languagecenterapp.DTO.Request.ServiceRequest;
 import Geeks.languagecenterapp.Model.CourseEntity;
-import Geeks.languagecenterapp.Model.ServiceEntity;
 import Geeks.languagecenterapp.Model.UserEntity;
 import Geeks.languagecenterapp.Service.CourseService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,5 +49,9 @@ public class CourseController {
     public ResponseEntity<Object> deleteCourseFromFavorite(@PathVariable("id") int id, @AuthenticationPrincipal UserEntity user) throws JsonProcessingException {
         return courseService.deleteFromFavorite(id, user);
     }
+    @GetMapping("/get-course-rate/{id}")
+    public ResponseEntity<Object> getCourseRate(@PathVariable("id") int id ) throws JsonProcessingException {
+        return courseService.getRate(id);
 
+    }
 }
