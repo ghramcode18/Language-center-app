@@ -51,7 +51,16 @@ public class UserController {
     // Rate Course
     @PostMapping("/rate-course/{courseId}")
     public ResponseEntity<Object> rateCourse(@PathVariable("courseId") int id, @RequestBody RateRequest body) throws JsonProcessingException {
-        return userService.rate(body, id);
+        return userService.rateCourse(body, id);
+    }
+    // Rate teacher
+    @PostMapping("/rate-teacher/{teacherId}")
+    public ResponseEntity<Object> rateTeacher(@PathVariable("teacherId") int id, @RequestBody RateRequest body) throws JsonProcessingException {
+        return userService.rateTeacher(body, id);
+    }
+    @GetMapping("/get-teacher-rate/{id}")
+    public ResponseEntity<Object> getCourseRate(@PathVariable("id") int id ) throws JsonProcessingException {
+        return userService.getTeacherRate(id);
     }
 
     @GetMapping("/showTeachers")

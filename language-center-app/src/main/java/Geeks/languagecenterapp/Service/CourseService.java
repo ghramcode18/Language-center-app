@@ -1,6 +1,8 @@
 package Geeks.languagecenterapp.Service;
 
+import Geeks.languagecenterapp.DTO.Request.AttendanceRequest;
 import Geeks.languagecenterapp.DTO.Request.CourseRequest;
+import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
 import Geeks.languagecenterapp.Model.*;
 import Geeks.languagecenterapp.Repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +31,8 @@ public class CourseService {
     private FavoriteRepository favoriteRepository;
     @Autowired
     private EnrollCourseRepository enrollCourseRepository;
+    @Autowired
+    private AttendanceRepository attendanceRepository;
 
 
     //Add Course by admin and return ok , return bad request response otherwise
@@ -213,5 +218,51 @@ public class CourseService {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
         }
+    }
+    //QR Attendance
+    public ResponseEntity<Object> qrAttendance(AttendanceRequest body ,int id) throws JsonProcessingException {
+        Optional<CourseEntity> course = courseRepository.findById(id);
+        Optional<UserEntity> student = userRepository.findById(body.getStd_id());
+        if (course.isPresent()) {
+            AttendanceEntity attendance = new AttendanceEntity();
+            attendance.setCourse(course.get());
+            attendance.setUser(student.get());
+            attendance.setQr(body.getQr());
+            attendance.setPresent(true);
+            attendance.setAttDate(LocalDateTime.now());
+            attendanceRepository.save(attendance);
+
+            String successMessage = "Thank you for attendance.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        }
+        String successMessage = "Some Thing Went wrong.";
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(successMessage);
+        return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+    }
+    //Manual Attendance
+    public ResponseEntity<Object> manualAttendance(EnrollRequest body, int id) throws JsonProcessingException {
+        Optional<CourseEntity> course = courseRepository.findById(id);
+        Optional<UserEntity> student = userRepository.findById(body.getStd_id());
+        if (course.isPresent()) {
+            AttendanceEntity attendance = new AttendanceEntity();
+            attendance.setCourse(course.get());
+            attendance.setUser(student.get());
+            attendance.setQr(null);
+            attendance.setPresent(true);
+            attendance.setAttDate(LocalDateTime.now());
+            attendanceRepository.save(attendance);
+
+            String successMessage = "Thank you for attendance.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        }
+        String successMessage = "Some Thing Went wrong.";
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(successMessage);
+        return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
     }
 }

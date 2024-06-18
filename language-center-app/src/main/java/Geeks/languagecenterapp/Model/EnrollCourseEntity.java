@@ -38,7 +38,5 @@ public class EnrollCourseEntity {
     private String marks;
 
     private boolean isOrderCertification;
-
-    private float rate;
-
+    
 }
