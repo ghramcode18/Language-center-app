@@ -2,7 +2,9 @@ package Geeks.languagecenterapp.Controller;
 
 import Geeks.languagecenterapp.DTO.Request.AttendanceRequest;
 import Geeks.languagecenterapp.DTO.Request.CourseRequest;
+import Geeks.languagecenterapp.DTO.Request.DayCourseRequest;
 import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
+import Geeks.languagecenterapp.DTO.Response.CourseResponse;
 import Geeks.languagecenterapp.Model.CourseEntity;
 import Geeks.languagecenterapp.Model.UserEntity;
 import Geeks.languagecenterapp.Service.CourseService;
@@ -34,18 +36,32 @@ public class CourseController {
     public ResponseEntity<Object> deleteCourse(@PathVariable("id") int id ) throws JsonProcessingException {
         return courseService.delete(id);
     }
+    //Add Time and Day for A course
+    @PostMapping("/add-day/{id}")
+    public ResponseEntity<Object> addTimeDay(@PathVariable("id") int id ,@RequestBody DayCourseRequest body) throws JsonProcessingException {
+        return courseService.addDay(body,id);
+    }
+    //update Time and Day for A course
+    @PostMapping("/update-day/{id}")
+    public ResponseEntity<Object> updateTimeDay(@PathVariable("id") int id ,@RequestBody DayCourseRequest body) throws JsonProcessingException {
+        return courseService.updateDay(body,id);
+    }
+    //delete Time and Day for A course
+    @DeleteMapping("/delete-day/{id}")
+    public ResponseEntity<Object> deleteTimeDay(@PathVariable("id") int id ,@RequestBody DayCourseRequest body) throws JsonProcessingException {
+        return courseService.deleteDay(body,id);
+    }
     //get All Courses
     @GetMapping("/get/all")
-    public ResponseEntity<List<CourseEntity>> getAllCourses() throws JsonProcessingException {
-        return ResponseEntity.ok(courseService.getAll());
+    public ResponseEntity<List<CourseResponse>> getAllCourses() {
+        List<CourseResponse> courses = courseService.getAll();
+        return ResponseEntity.ok(courses);
     }
-
     // Add Course to Favorite
     @PostMapping("/add-to-favorite/{id}")
     public ResponseEntity<Object> addCourseToFavorite(@PathVariable("id") int id, @AuthenticationPrincipal UserEntity user) throws JsonProcessingException {
         return courseService.addToFavorite(id, user);
     }
-
     // Delete Course from Favorite
     @PostMapping("/remove-from-favorite/{id}")
     public ResponseEntity<Object> deleteCourseFromFavorite(@PathVariable("id") int id, @AuthenticationPrincipal UserEntity user) throws JsonProcessingException {

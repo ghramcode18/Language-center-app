@@ -22,19 +22,16 @@ public class ServiceController {
     public ResponseEntity<Object> addService(@RequestBody ServiceRequest body) throws JsonProcessingException {
         return serviceService.add(body);
     }
-
     //update Service
     @PostMapping("/update/{id}")
     public ResponseEntity<Object> updateService(@PathVariable("id") int id, @RequestBody ServiceRequest body) throws JsonProcessingException {
         return serviceService.update(body, id);
     }
-
     //delete Service
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteService(@PathVariable("id") int id) throws JsonProcessingException {
         return serviceService.delete(id);
     }
-
     //get All Services
     @GetMapping("/get/all")
     public ResponseEntity<List<ServiceEntity>> getAllServices() {

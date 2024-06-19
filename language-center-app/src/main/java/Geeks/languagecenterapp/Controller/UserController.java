@@ -29,25 +29,21 @@ public class UserController {
     public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserEntity user) {
         return new ResponseEntity<>(userService.userProfile(user), HttpStatus.OK);
     }
-
     //TODO :api need test
     @GetMapping("/enrolled-courses")
     public List<CourseEntity> getEnrolledCourses(@AuthenticationPrincipal UserEntity user) {
         return userService.getEnrolledCourses(user);
     }
-
     //TODO :api need test
     @GetMapping("/favorite-courses")
     public List<CourseEntity> getFavoriteCourses(@AuthenticationPrincipal UserEntity user) throws JsonProcessingException {
         return userService.getFavoriteCourses(user);
     }
-
     // Enroll Course
     @PostMapping("/enroll-course/{courseId}")
     public ResponseEntity<Object> enrollCourse(@PathVariable("courseId") int id, @RequestBody EnrollRequest body) throws JsonProcessingException {
         return userService.enroll(body, id);
     }
-
     // Rate Course
     @PostMapping("/rate-course/{courseId}")
     public ResponseEntity<Object> rateCourse(@PathVariable("courseId") int id, @RequestBody RateRequest body) throws JsonProcessingException {
@@ -58,6 +54,7 @@ public class UserController {
     public ResponseEntity<Object> rateTeacher(@PathVariable("teacherId") int id, @RequestBody RateRequest body) throws JsonProcessingException {
         return userService.rateTeacher(body, id);
     }
+    // Get Teacher Rate
     @GetMapping("/get-teacher-rate/{id}")
     public ResponseEntity<Object> getCourseRate(@PathVariable("id") int id ) throws JsonProcessingException {
         return userService.getTeacherRate(id);

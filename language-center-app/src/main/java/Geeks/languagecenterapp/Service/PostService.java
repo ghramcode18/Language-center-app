@@ -127,7 +127,7 @@ public class PostService {
     public List<PostEntity> getRecentEvents() {
         return postRepository.findByTypeOrderByCreatedAtDesc(PostEnum.EVENT);
     }
-    //get all recent events
+    //get all old events
     public List<PostEntity> getOldEvents() {
         return postRepository.findByTypeOrderByCreatedAtAsc(PostEnum.EVENT);
     }

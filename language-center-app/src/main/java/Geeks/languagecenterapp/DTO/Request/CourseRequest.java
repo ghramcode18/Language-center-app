@@ -1,10 +1,6 @@
 package Geeks.languagecenterapp.DTO.Request;
 
-import Geeks.languagecenterapp.Model.ServiceEntity;
-import Geeks.languagecenterapp.Model.UserEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,4 +20,5 @@ public class CourseResponse {
     private LocalDateTime startDate;
     private double progress;
     private String level;
+    private List<CourseDayResponse> courseDayList;
 }

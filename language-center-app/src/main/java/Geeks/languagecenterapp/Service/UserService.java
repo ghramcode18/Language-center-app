@@ -276,7 +276,7 @@ public class UserService {
         String jsonResponse = objectMapper.writeValueAsString(successMessage);
         return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
     }
-
+    //rate teacher
     public ResponseEntity<Object> rateTeacher(RateRequest body, int id) throws JsonProcessingException {
         Optional<UserEntity> teacher = userRepository.findById(id);
         if (!teacher.isPresent() ) {
@@ -323,7 +323,7 @@ public class UserService {
            if (teacherRate.isPresent()) {
 
                   // Calculate average rate
-                  float averageRate = (float)teacherRate.get().getCountSum()/(float)teacherRate.get().getCountRate();
+                  float averageRate = teacherRate.get().getCountSum()/(float)teacherRate.get().getCountRate();
 
                   // Build response
                   ObjectMapper objectMapper = new ObjectMapper();

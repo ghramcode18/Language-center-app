@@ -2,7 +2,10 @@ package Geeks.languagecenterapp.Service;
 
 import Geeks.languagecenterapp.DTO.Request.AttendanceRequest;
 import Geeks.languagecenterapp.DTO.Request.CourseRequest;
+import Geeks.languagecenterapp.DTO.Request.DayCourseRequest;
 import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
+import Geeks.languagecenterapp.DTO.Response.CourseDayResponse;
+import Geeks.languagecenterapp.DTO.Response.CourseResponse;
 import Geeks.languagecenterapp.Model.*;
 import Geeks.languagecenterapp.Repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,6 +35,10 @@ public class CourseService {
     private EnrollCourseRepository enrollCourseRepository;
     @Autowired
     private AttendanceRepository attendanceRepository;
+    @Autowired
+    private DayRepository dayRepository;
+    @Autowired
+    private CourseDayRepository courseDayRepository;
 
 
     //Add Course by admin and return ok , return bad request response otherwise
@@ -145,9 +151,38 @@ public class CourseService {
             return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
         }
     }
-    //get all Services
-    public List<CourseEntity> getAll() {
-        return courseRepository.findAll();
+    // Fetch all courses with day and time information
+    public List<CourseResponse> getAll() {
+        List<CourseEntity> courses = courseRepository.findAll();
+        return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    // Convert CourseEntity to CourseDTO
+    private CourseResponse convertToDTO(CourseEntity course) {
+        CourseResponse dto = new CourseResponse();
+        dto.setTitle(course.getTitle());
+        dto.setDescription(course.getDescription());
+        dto.setPrice(course.getPrice());
+        dto.setNumOfHours(course.getNumOfHours());
+        dto.setNumOfSessions(course.getNumOfSessions());
+        dto.setNumOfRoom(course.getNumOfRoom());
+        dto.setStartDate(course.getStartDate());
+        dto.setProgress(course.getProgress());
+        dto.setLevel(course.getLevel());
+
+        List<CourseDayResponse> courseDayDTOs = course.getCourseDayList().stream().map(this::convertToCourseDayDTO).collect(Collectors.toList());
+        dto.setCourseDayList(courseDayDTOs);
+        return dto;
+    }
+
+    // Convert CourseDayEntity to CourseDayDTO
+    // Convert CourseDayEntity to CourseDayDTO
+    private CourseDayResponse convertToCourseDayDTO(CourseDayEntity courseDay) {
+        CourseDayResponse dto = new CourseDayResponse();
+        dto.setId(courseDay.getId());
+        dto.setDay(courseDay.getDay().getDay());
+        dto.setCourseTime(courseDay.isCourseTime() ? "Morning" : "Evening");
+        return dto;
     }
 
 
@@ -265,4 +300,69 @@ public class CourseService {
         String jsonResponse = objectMapper.writeValueAsString(successMessage);
         return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
     }
+    //Add Time and Day for A course
+    public ResponseEntity<Object> addDay(DayCourseRequest body, int id) throws JsonProcessingException {
+        Optional<CourseEntity> course = courseRepository.findById(id);
+        Optional<DayEntity> day =dayRepository.findById(body.getDay_id());
+        if (course.isPresent()) {
+            CourseDayEntity courseDay = new CourseDayEntity();
+            courseDay.setCourse(course.get());
+            courseDay.setDay(day.get());
+            courseDay.setCourseTime(body.isTime());
+            courseDayRepository.save(courseDay);
+
+            String successMessage = "Day & Time added to course.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        }
+        else {
+            String successMessage = "Course not found.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        }
+    }
+    //update Time and Day for A course
+    public ResponseEntity<Object> updateDay(DayCourseRequest body, int id) throws JsonProcessingException {
+        Optional<DayEntity> day = dayRepository.findById(id);
+        Optional<CourseDayEntity> courseDay = courseDayRepository.findByCourseIdAndDayId(id,body.getDay_id());
+        if (courseDay.isPresent()) {
+            courseDay.get().setDay(day.get());
+            courseDay.get().setCourseTime(body.isTime());
+            courseDayRepository.save(courseDay.get());
+
+            String successMessage = "Day & Time updated to course.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        }
+        else {
+            String successMessage = "Some Thing Went wrong.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        }
+    }
+    //delete Time and Day for A course
+    public ResponseEntity<Object> deleteDay(DayCourseRequest body, int id) throws JsonProcessingException {
+        Optional<CourseDayEntity> courseDay = courseDayRepository.findByCourseIdAndDayId(id,body.getDay_id());
+        if (courseDay.isPresent()) {
+            courseDayRepository.delete(courseDay.get());
+
+            String successMessage = "Day & Time deleted from course.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        }
+        else {
+            String successMessage = "Some Thing Went wrong.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        }
+
+    }
+
+
 }
