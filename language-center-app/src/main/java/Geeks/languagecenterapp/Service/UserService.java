@@ -29,8 +29,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.DoubleStream;
 
 @Service
 @AllArgsConstructor
@@ -60,6 +63,9 @@ public class UserService {
     @Autowired
     private final FavoriteRepository favoriteRepository;
 
+    @Autowired
+    private final UserRateRepository userRateRepository;
+
 
     public Register_Login_Response registerUser(RegisterRequest registerRequest) throws CustomException {
         if (userRepository.findByEmail(registerRequest.getEmail()).isPresent() || userRepository.findByPhoneNumber(registerRequest.getPhone()).isPresent()) {
@@ -80,8 +86,8 @@ public class UserService {
             String imageUrl = FilesManagement.uploadSingleFile(registerRequest.getImage());
             if (imageUrl != null) {
                 List<ImageEntity> onlyProfileImage = new ArrayList<>();
-                // initialize Image Object
                 ImageEntity imageEntity = new ImageEntity();
+                // initialize Image Object
                 imageEntity.setImgUrl(imageUrl);
                 imageEntity.setType(ImageEnum.PROFILE);
                 imageEntity.setUser(user);
@@ -216,7 +222,7 @@ public class UserService {
     }
 
     //rate course
-    public ResponseEntity<Object> rate(RateRequest body, int id) throws JsonProcessingException {
+    public ResponseEntity<Object> rateCourse(RateRequest body, int id) throws JsonProcessingException {
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<UserEntity> student = userRepository.findById(body.getStd_id());
         // Check if the placement test exists
@@ -245,6 +251,64 @@ public class UserService {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonResponse = objectMapper.writeValueAsString(successMessage);
         return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    //rate teacher
+    public ResponseEntity<Object> rateTeacher(RateRequest body, int id) throws JsonProcessingException {
+        Optional<UserEntity> teacher = userRepository.findById(id);
+        if (!teacher.isPresent() ) {
+            // Create a response object with the success message
+            String successMessage = "You Can not Rate...Teacher Not found.";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+        }
+        Optional<UserRateEntity>  teacherRate = userRateRepository.findById(teacher.get().getId());
+        if (teacherRate.isPresent()) {
+            teacherRate.get().setUser(teacher.get());
+            teacherRate.get().setDate(LocalDateTime.now());
+            teacherRate.get().setCountRate(teacherRate.get().getCountRate()+1);
+            teacherRate.get().setCountSum(teacherRate.get().getCountSum() + body.getRate());
+            userRateRepository.save(teacherRate.get());
+
+            // Create a response object with the success message
+            String successMessage = "Rate added successfully....Thank you :)";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        }
+        else {//first Rate
+            UserRateEntity newRate = new UserRateEntity();
+            newRate.setUser(teacher.get());
+            newRate.setDate(LocalDateTime.now());
+            newRate.setCountRate(1);
+            newRate.setCountSum(body.getRate());
+            userRateRepository.save(newRate);
+
+            // Create a response object with the success message
+            String successMessage = "Rate added successfully....Thank you :)";
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(successMessage);
+            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        }
+
+    }
+
+    public ResponseEntity<Object> getTeacherRate(int id) throws JsonProcessingException {
+           Optional<UserEntity> teacher = userRepository.findById(id);
+           Optional<UserRateEntity> teacherRate = userRateRepository.findByUser(teacher.get());
+           if (teacherRate.isPresent()) {
+
+                  // Calculate average rate
+                  float averageRate = teacherRate.get().getCountSum()/(float)teacherRate.get().getCountRate();
+
+                  // Build response
+                  ObjectMapper objectMapper = new ObjectMapper();
+                  String jsonResponse = objectMapper.writeValueAsString(averageRate);
+                  return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+              } else {
+                  return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
+              }
     }
 
     public ResponseEntity<?> uploadCertificates(List<MultipartFile> files) {
@@ -279,5 +343,4 @@ public class UserService {
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
     }
-
 }

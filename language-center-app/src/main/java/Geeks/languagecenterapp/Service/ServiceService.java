@@ -1,12 +1,11 @@
 package Geeks.languagecenterapp.Service;
 
-import Geeks.languagecenterapp.DTO.Request.BookRequest;
 import Geeks.languagecenterapp.DTO.Request.ServiceRequest;
+import Geeks.languagecenterapp.DTO.Response.CourseDayResponse;
 import Geeks.languagecenterapp.DTO.Response.CourseResponse;
-import Geeks.languagecenterapp.DTO.Response.ScheduleResponse;
 import Geeks.languagecenterapp.DTO.Response.ServiceWithCourseResponse;
+import Geeks.languagecenterapp.Model.CourseDayEntity;
 import Geeks.languagecenterapp.Model.CourseEntity;
-import Geeks.languagecenterapp.Model.PlacementTestEntity;
 import Geeks.languagecenterapp.Model.ServiceEntity;
 import Geeks.languagecenterapp.Repository.CourseRepository;
 import Geeks.languagecenterapp.Repository.ServiceRepository;
@@ -118,24 +117,36 @@ public class ServiceService {
 
     private ServiceWithCourseResponse mapToServiceWithCourseResponse(ServiceEntity serviceEntity) {
         List<CourseResponse> courseResponses = serviceEntity.getCourses().stream()
-                .map(this::mapToCourseResponse)
+                .map(this::mapToCourseDTO)
                 .collect(Collectors.toList());
 
         return new ServiceWithCourseResponse(serviceEntity.getName(), courseResponses);
     }
 
-    private CourseResponse mapToCourseResponse(CourseEntity courseEntity) {
-        return new CourseResponse(
-                courseEntity.getTitle(),
-                courseEntity.getDescription(),
-                courseEntity.getPrice(),
-                courseEntity.getNumOfHours(),
-                courseEntity.getNumOfSessions(),
-                courseEntity.getNumOfRoom(),
-                courseEntity.getStartDate(),
-                courseEntity.getProgress(),
-                courseEntity.getLevel()
-        );
+    private CourseResponse mapToCourseDTO(CourseEntity courseEntity) {
+        CourseResponse dto = new CourseResponse();
+        dto.setTitle(courseEntity.getTitle());
+        dto.setDescription(courseEntity.getDescription());
+        dto.setPrice(courseEntity.getPrice());
+        dto.setNumOfHours(courseEntity.getNumOfHours());
+        dto.setNumOfSessions(courseEntity.getNumOfSessions());
+        dto.setNumOfRoom(courseEntity.getNumOfRoom());
+        dto.setStartDate(courseEntity.getStartDate());
+        dto.setProgress(courseEntity.getProgress());
+        dto.setLevel(courseEntity.getLevel());
+
+        List<CourseDayResponse> courseDayDTOs = courseEntity.getCourseDayList().stream()
+                .map(this::mapToCourseDayDTO)
+                .collect(Collectors.toList());
+        dto.setCourseDayList(courseDayDTOs);
+        return dto;
     }
 
+    private CourseDayResponse mapToCourseDayDTO(CourseDayEntity courseDayEntity) {
+        CourseDayResponse dto = new CourseDayResponse();
+        dto.setId(courseDayEntity.getId());
+        dto.setDay(courseDayEntity.getDay().getDay());
+        dto.setCourseTime(courseDayEntity.isCourseTime() ? "Morning" : "Evening");
+        return dto;
+    }
 }

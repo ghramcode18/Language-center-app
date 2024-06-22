@@ -1,5 +1,6 @@
 package Geeks.languagecenterapp.Controller;
 
+import Geeks.languagecenterapp.DTO.Request.BookRequest;
 import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
 import Geeks.languagecenterapp.DTO.Request.RateRequest;
 import Geeks.languagecenterapp.Model.CourseEntity;
@@ -41,23 +42,30 @@ public class UserController {
     public List<CourseEntity> getEnrolledCourses(@AuthenticationPrincipal UserEntity user) {
         return userService.getEnrolledCourses(user);
     }
-
     //TODO :api need test
     @GetMapping("/favorite-courses")
     public List<CourseEntity> getFavoriteCourses(@AuthenticationPrincipal UserEntity user) throws JsonProcessingException {
         return userService.getFavoriteCourses(user);
     }
-
     // Enroll Course
     @PostMapping("/enroll-course/{courseId}")
     public ResponseEntity<Object> enrollCourse(@PathVariable("courseId") int id, @RequestBody EnrollRequest body) throws JsonProcessingException {
         return userService.enroll(body, id);
     }
-
     // Rate Course
     @PostMapping("/rate-course/{courseId}")
     public ResponseEntity<Object> rateCourse(@PathVariable("courseId") int id, @RequestBody RateRequest body) throws JsonProcessingException {
-        return userService.rate(body, id);
+        return userService.rateCourse(body, id);
+    }
+    // Rate teacher
+    @PostMapping("/rate-teacher/{teacherId}")
+    public ResponseEntity<Object> rateTeacher(@PathVariable("teacherId") int id, @RequestBody RateRequest body) throws JsonProcessingException {
+        return userService.rateTeacher(body, id);
+    }
+    // Get Teacher Rate
+    @GetMapping("/get-teacher-rate/{id}")
+    public ResponseEntity<Object> getCourseRate(@PathVariable("id") int id ) throws JsonProcessingException {
+        return userService.getTeacherRate(id);
     }
 
     @GetMapping("/showTeachers")
