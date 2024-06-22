@@ -13,6 +13,7 @@ import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Repository.*;
 import Geeks.languagecenterapp.Service.SecurityServices.EncryptionService;
 import Geeks.languagecenterapp.Service.SecurityServices.JWTService;
+import Geeks.languagecenterapp.Tools.FilesManagement;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,13 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -77,11 +77,11 @@ public class UserService {
             user.setEducation(registerRequest.getEducation());
             user.setPhoneNumber(registerRequest.getPhone());
             user.setPassword(encryptionService.encryptPassword(registerRequest.getPassword()));
-            String imageUrl = uploadFile(registerRequest.getImage());
+            String imageUrl = FilesManagement.uploadSingleFile(registerRequest.getImage());
             if (imageUrl != null) {
                 List<ImageEntity> onlyProfileImage = new ArrayList<>();
-                ImageEntity imageEntity = new ImageEntity();
                 // initialize Image Object
+                ImageEntity imageEntity = new ImageEntity();
                 imageEntity.setImgUrl(imageUrl);
                 imageEntity.setType(ImageEnum.PROFILE);
                 imageEntity.setUser(user);
@@ -152,32 +152,6 @@ public class UserService {
         Map<String, String> map = new HashMap<>();
         map.put("message", "Logout Successfully");
         return map;
-    }
-
-    // Upload Files
-    private static final String UPLOAD_DIR = "C:\\Users\\NAEL PC\\Desktop\\Learning\\SpringBoot\\Projects\\Language-center-app\\language-center-app\\Files";
-
-    private String uploadFile(MultipartFile file) {
-        if (file.isEmpty()) {
-            return null;
-        }
-        try {
-            File dir = new File(UPLOAD_DIR);
-            boolean dirIsCreated = false;
-            // Create Directory If Not Exist
-            if (!dir.exists()) {
-                dirIsCreated = dir.mkdirs();
-            }
-            if (dir.exists() || dirIsCreated) {
-                File uploadedFile = new File(dir, Objects.requireNonNull(file.getOriginalFilename()));
-                file.transferTo(uploadedFile);
-                return uploadedFile.getAbsolutePath();
-            } else {
-                return "Directory Not exist And Can not Created !";
-            }
-        } catch (IOException e) {
-            return null;
-        }
     }
 
     public List<UserEntity> getUsers(UserAccountEnum accountType) {
@@ -271,6 +245,39 @@ public class UserService {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonResponse = objectMapper.writeValueAsString(successMessage);
         return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    public ResponseEntity<?> uploadCertificates(List<MultipartFile> files) {
+        Map<String, String> response = new HashMap<>();
+
+        //Check User Role
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+        Enum<UserAccountEnum> role = user.getAccountType();
+
+        if (role.equals(UserAccountEnum.TEACHER) || role.equals(UserAccountEnum.ADMIN)) {
+            List<String> resultPaths = FilesManagement.uploadMultipleFile(files);
+            if (resultPaths == null) {
+                response.put("message:", "No Files Selected");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            } else if (resultPaths.isEmpty()) {
+                response.put("message:", "Error When Uploading Files.. Please Try Again Later");
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            } else {
+                for (String item : resultPaths) {
+                    ImageEntity imageEntity = new ImageEntity();
+                    imageEntity.setUser(user);
+                    imageEntity.setType(ImageEnum.CERTIFICATE);
+                    imageEntity.setImgUrl(item);
+                    imageRepository.save(imageEntity);
+                }
+                return new ResponseEntity<>(resultPaths, HttpStatus.OK);
+            }
+
+        } else {
+            response.put("message:", "Only Teachers And Admins Can Upload Certificates");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
     }
 
 }

@@ -39,6 +39,4 @@ public class EnrollCourseEntity {
 
     private boolean isOrderCertification;
 
-    private float rate;
-
 }

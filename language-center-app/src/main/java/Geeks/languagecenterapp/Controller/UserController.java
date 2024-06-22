@@ -1,6 +1,5 @@
 package Geeks.languagecenterapp.Controller;
 
-import Geeks.languagecenterapp.DTO.Request.BookRequest;
 import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
 import Geeks.languagecenterapp.DTO.Request.RateRequest;
 import Geeks.languagecenterapp.Model.CourseEntity;
@@ -10,10 +9,12 @@ import Geeks.languagecenterapp.Service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,6 +29,11 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserEntity user) {
         return new ResponseEntity<>(userService.userProfile(user), HttpStatus.OK);
+    }
+
+    @PostMapping("/certificates")
+    public ResponseEntity<?> uploadTeacherCertificates (@Param("files") List<MultipartFile> files) {
+        return userService.uploadCertificates(files);
     }
 
     //TODO :api need test
