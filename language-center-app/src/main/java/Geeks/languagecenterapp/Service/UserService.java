@@ -27,13 +27,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.DoubleStream;
 
 @Service
 @AllArgsConstructor
@@ -212,7 +207,7 @@ public class UserService {
         enrollCourseRepository.save(enrollCourse);
 
         // Create a response object with the success message
-        response.put("message","Enroll successfully.");
+        response.put("message","Enroll Successfully.");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -230,17 +225,17 @@ public class UserService {
 
         // Check if the booking already exists for this student and course
         Optional<EnrollCourseEntity> existingBooking = enrollCourseRepository.findByUserIdAndCourseId(student.get().getId(), course.get().getId());
-        if (existingBooking.isPresent()) {
+        if (existingBooking.isPresent() && student.get().getAccountType()==UserAccountEnum.USER) {
             existingBooking.get().setRate(body.getRate());
             enrollCourseRepository.save(existingBooking.get());
             // Create a response object with the success message
-            response.put("message","Rate added successfully :).");
+            response.put("message","Rate added successfully :)");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         // Create a response object with the success message
         response.put("message","Something went wrong.");
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     //rate teacher
@@ -253,7 +248,7 @@ public class UserService {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         Optional<UserRateEntity>  teacherRate = userRateRepository.findById(teacher.get().getId());
-        if (teacherRate.isPresent()) {
+        if (teacherRate.isPresent() && teacher.get().getAccountType()==UserAccountEnum.TEACHER) {
             teacherRate.get().setUser(teacher.get());
             teacherRate.get().setDate(LocalDateTime.now());
             teacherRate.get().setCountRate(teacherRate.get().getCountRate()+1);
@@ -261,29 +256,33 @@ public class UserService {
             userRateRepository.save(teacherRate.get());
 
             // Create a response object with the success message
-            response.put("message","Rate added successfully :).");
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            response.put("message","Rate added successfully :)");
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
         }
         else {//first Rate
-            UserRateEntity newRate = new UserRateEntity();
-            newRate.setUser(teacher.get());
-            newRate.setDate(LocalDateTime.now());
-            newRate.setCountRate(1);
-            newRate.setCountSum(body.getRate());
-            userRateRepository.save(newRate);
+            if(teacher.get().getAccountType()==UserAccountEnum.TEACHER) {
+                UserRateEntity newRate = new UserRateEntity();
+                newRate.setUser(teacher.get());
+                newRate.setDate(LocalDateTime.now());
+                newRate.setCountRate(1);
+                newRate.setCountSum(body.getRate());
+                userRateRepository.save(newRate);
 
-            // Create a response object with the success message
-            response.put("message","Rate added successfully :).");
-            return new ResponseEntity<>(response, HttpStatus.OK);
+                // Create a response object with the success message
+                response.put("message","Rate added successfully :)");
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
+            }
         }
-
+        // Create a response object with the success message
+        response.put("message","Something went wrong.");
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public ResponseEntity<Object> getTeacherRate(int id) throws JsonProcessingException {
         Map <String,String> response = new HashMap<>();
            Optional<UserEntity> teacher = userRepository.findById(id);
            Optional<UserRateEntity> teacherRate = userRateRepository.findByUser(teacher.get());
-           if (teacherRate.isPresent()) {
+           if (teacherRate.isPresent() && teacher.get().getAccountType()==UserAccountEnum.TEACHER) {
 
                   // Calculate average rate
                   float averageRate = teacherRate.get().getCountSum()/(float)teacherRate.get().getCountRate();

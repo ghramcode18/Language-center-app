@@ -5,7 +5,6 @@ import Geeks.languagecenterapp.Model.Enum.PostEnum;
 import Geeks.languagecenterapp.Model.PostEntity;
 import Geeks.languagecenterapp.Repository.PostRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +40,7 @@ public class PostService {
         } catch (Exception e) {
             // Create a response object with the success message
             response.put("message","Something went wrong.");
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -61,7 +60,7 @@ public class PostService {
             } catch (Exception e) {
                 // Create a response object with the success message
                 response.put("message","Something went wrong.");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
             // Create a response object with the success message
@@ -84,7 +83,7 @@ public class PostService {
             } catch (Exception e) {
                 // Create a response object with the success message
                 response.put("message","Something went wrong.");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
             // Create a response object with the success message

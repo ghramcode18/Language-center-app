@@ -1,18 +1,15 @@
 package Geeks.languagecenterapp.Service;
 import Geeks.languagecenterapp.DTO.Request.BookRequest;
 import Geeks.languagecenterapp.DTO.Request.PlacementTestRequest;
-import Geeks.languagecenterapp.DTO.Request.PostRequest;
 import Geeks.languagecenterapp.DTO.Response.ScheduleResponse;
 import Geeks.languagecenterapp.Model.BookEntity;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Model.PlacementTestEntity;
-import Geeks.languagecenterapp.Model.PostEntity;
 import Geeks.languagecenterapp.Model.UserEntity;
 import Geeks.languagecenterapp.Repository.BookRepository;
 import Geeks.languagecenterapp.Repository.PlacementTestRepository;
 import Geeks.languagecenterapp.Repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +51,7 @@ public class PlacementTestService {
         } catch (Exception e) {
             // Create a response object with the success message
             response.put("message","Something went wrong.");
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -78,7 +75,7 @@ public class PlacementTestService {
             } catch (Exception e) {
                 // Create a response object with the success message
                 response.put("message","Something went wrong.");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
             // Create a response object with the success message
@@ -101,7 +98,7 @@ public class PlacementTestService {
             } catch (Exception e) {
                 // Create a response object with the success message
                 response.put("message","Something went wrong.");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
             // Create a response object with the success message
@@ -179,7 +176,7 @@ public class PlacementTestService {
 
         // Create a response object with the success message
         response.put("message","Book Added Successfully.");
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     //get all placement tests with the users that books on it

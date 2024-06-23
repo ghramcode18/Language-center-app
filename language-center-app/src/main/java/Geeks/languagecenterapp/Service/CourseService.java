@@ -7,6 +7,7 @@ import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
 import Geeks.languagecenterapp.DTO.Response.CourseDayResponse;
 import Geeks.languagecenterapp.DTO.Response.CourseResponse;
 import Geeks.languagecenterapp.Model.*;
+import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,7 +52,7 @@ public class CourseService {
             CourseEntity course = new CourseEntity();
             Optional<UserEntity> teacher = userRepository.findById(courseRequest.getTeacher_id());
             Optional<ServiceEntity> service=serviceRepository.findById(courseRequest.getService_id());
-            if (teacher.isPresent() && service.isPresent()) {
+            if (teacher.isPresent() && service.isPresent() && teacher.get().getAccountType() == UserAccountEnum.TEACHER) {
                 course.setUser(teacher.get());
                 course.setService(service.get());
                 course.setTitle(courseRequest.getTitle());
@@ -70,15 +71,25 @@ public class CourseService {
                 response.put("message","Course added successfully.");
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             }
+            else if(!teacher.isPresent()) {
+                // Create a response object with the success message
+                response.put("message","Teacher not found.");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+            else if(!service.isPresent()) {
+                // Create a response object with the success message
+                response.put("message","Service not found.");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
             else {
                 // Create a response object with the success message
-                response.put("message","Something went wrong");
+                response.put("message","Something went wrong.");
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
 
         } catch (Exception e) {
             // Create a response object with the error message
-            response.put("message","Something went wrong.");
+            response.put("message","Some Error Occurred.");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -119,8 +130,8 @@ public class CourseService {
 
             } catch (Exception e) {
                 // Create a response object with the success message
-                response.put("message","Something went wrong.");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                response.put("message","Some Error Occurred.");
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
             // Create a response object with the success message
@@ -144,7 +155,7 @@ public class CourseService {
             } catch (Exception e) {
                 // Create a response object with the success message
                 response.put("message","Something went wrong.");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
             /// Create a response object with the success message
@@ -221,7 +232,7 @@ public class CourseService {
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             } else {
                 // Create a response object with the success message
-                response.put("message","Something went wrong.");
+                response.put("message","This Course is Not in Your Favorite.");
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
         } else {
@@ -261,7 +272,13 @@ public class CourseService {
         Map <String,String> response = new HashMap<>();
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<UserEntity> student = userRepository.findById(body.getStd_id());
-        if (course.isPresent()) {
+        Optional<EnrollCourseEntity> enroll= enrollCourseRepository.findByUserIdAndCourseId(student.get().getId(), body.getStd_id());
+        if (!enroll.isPresent()) {
+            // Create a response object with the success message
+            response.put("message","This Student Does Not Enrolled In This Course.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        if (course.isPresent() && student.isPresent() && student.get().getAccountType()==UserAccountEnum.USER) {
             AttendanceEntity attendance = new AttendanceEntity();
             attendance.setCourse(course.get());
             attendance.setUser(student.get());
@@ -271,19 +288,25 @@ public class CourseService {
             attendanceRepository.save(attendance);
 
             // Create a response object with the success message
-            response.put("message","Thank you for attendance.");
+            response.put("message","Thank you for attendance :)");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         // Create a response object with the success message
-        response.put("message","Something went wrong.");
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        response.put("message","Course Not Found.");
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
     //Manual Attendance
     public ResponseEntity<Object> manualAttendance(EnrollRequest body, int id) throws JsonProcessingException {
         Map <String,String> response = new HashMap<>();
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<UserEntity> student = userRepository.findById(body.getStd_id());
-        if (course.isPresent()) {
+        Optional<EnrollCourseEntity> enroll= enrollCourseRepository.findByUserIdAndCourseId(student.get().getId(), body.getStd_id());
+        if (!enroll.isPresent()) {
+            // Create a response object with the success message
+            response.put("message","This Student Does Not Enrolled In This Course.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        if (course.isPresent() && student.isPresent() && student.get().getAccountType()==UserAccountEnum.USER) {
             AttendanceEntity attendance = new AttendanceEntity();
             attendance.setCourse(course.get());
             attendance.setUser(student.get());
@@ -293,12 +316,12 @@ public class CourseService {
             attendanceRepository.save(attendance);
 
             // Create a response object with the success message
-            response.put("message","Thank you for attendance.");
+            response.put("message","Thank you for attendance :)");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         // Create a response object with the success message
-        response.put("message","Something went wrong.");
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        response.put("message","Course Not Found.");
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
     //Add Time and Day for A course
     public ResponseEntity<Object> addDay(DayCourseRequest body, int id) throws JsonProcessingException {
@@ -340,7 +363,7 @@ public class CourseService {
         }
         else {
             // Create a response object with the success message
-            response.put("message","Course Not Found.");
+            response.put("message","Course Day Not Found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
@@ -353,7 +376,7 @@ public class CourseService {
             courseDayRepository.delete(courseDay.get());
 
             // Create a response object with the success message
-            response.put("message","Day & Time Deleted successfully.");
+            response.put("message","Course Day Deleted successfully.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         else {
