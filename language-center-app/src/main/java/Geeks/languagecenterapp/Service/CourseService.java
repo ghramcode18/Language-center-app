@@ -16,7 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
@@ -42,7 +45,8 @@ public class CourseService {
 
 
     //Add Course by admin and return ok , return bad request response otherwise
-    public ResponseEntity<Object> add(CourseRequest courseRequest) throws JsonProcessingException {
+    public ResponseEntity<?> add(CourseRequest courseRequest) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
         try {
             CourseEntity course = new CourseEntity();
             Optional<UserEntity> teacher = userRepository.findById(courseRequest.getTeacher_id());
@@ -56,27 +60,33 @@ public class CourseService {
                 course.setNumOfHours(courseRequest.getNumOfHours());
                 course.setNumOfSessions(courseRequest.getNumOfSessions());
                 course.setNumOfRoom(courseRequest.getNumOfRoom());
-                course.setStartDate(courseRequest.getStartDate());
+                // Manually parse the startDate from String to LocalDateTime
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                LocalDateTime parsedStartDate = LocalDateTime.parse(courseRequest.getStartDate(), formatter);
+                course.setStartDate(parsedStartDate);
                 course.setLevel(courseRequest.getLevel());
                 courseRepository.save(course);
+                // Create a response object with the success message
+                response.put("message","Course added successfully.");
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
+            }
+            else {
+                // Create a response object with the success message
+                response.put("message","Something went wrong");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
 
-            // Create a response object with the success message
-            String successMessage = "Course added successfully.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
         } catch (Exception e) {
             // Create a response object with the error message
-            String errorMessage = "Something went wrong.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(errorMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+            response.put("message","Something went wrong.");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     //Search for Course by id ...if found -> update info ...else return not found response
     public ResponseEntity<Object> update(CourseRequest courseRequest, int id) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
+
         Optional<CourseEntity> course = courseRepository.findById(id);
         if (course.isPresent()) {
             try {
@@ -91,64 +101,55 @@ public class CourseService {
                     course.get().setNumOfHours(courseRequest.getNumOfHours());
                     course.get().setNumOfSessions(courseRequest.getNumOfSessions());
                     course.get().setNumOfRoom(courseRequest.getNumOfRoom());
-                    course.get().setStartDate(courseRequest.getStartDate());
-                    course.get().setLevel(courseRequest.getLevel());
+                    // Manually parse the startDate from String to LocalDateTime
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    LocalDateTime parsedStartDate = LocalDateTime.parse(courseRequest.getStartDate(), formatter);
+                    course.get().setStartDate(parsedStartDate);                    course.get().setLevel(courseRequest.getLevel());
                     courseRepository.save(course.get());
                     // Create a response object with the success message
-                    String successMessage = "Course updated successfully.";
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    String jsonResponse = objectMapper.writeValueAsString(successMessage);
-                    return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+                    // Create a response object with the success message
+                    response.put("message","Course updated successfully.");
+                    return new ResponseEntity<>(response, HttpStatus.OK);
                 }
                 else {
                     // Create a response object with the success message
-                    String successMessage = "Some error occurred.";
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    String jsonResponse = objectMapper.writeValueAsString(successMessage);
-                    return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+                    response.put("message","Something went wrong.");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
 
             } catch (Exception e) {
-                // Create a response object with the error message
-                String errorMessage = "Something went wrong.";
-                ObjectMapper objectMapper = new ObjectMapper();
-                String jsonResponse = objectMapper.writeValueAsString(errorMessage);
-                return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+                // Create a response object with the success message
+                response.put("message","Something went wrong.");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
         } else {
-            // Create a response object with the not found message
-            String notFoundMessage = "Course not found.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(notFoundMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+            // Create a response object with the success message
+            response.put("message","Course Not Found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 
     //Search for Course by id ...if found -> delete info ...else return not found response
     public ResponseEntity<Object> delete(int id) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
+
         Optional<CourseEntity> course = courseRepository.findById(id);
         if (course.isPresent()) {
             try {
                 courseRepository.delete(course.get());
 
                 // Create a response object with the success message
-                String successMessage = "Course deleted successfully.";
-                ObjectMapper objectMapper = new ObjectMapper();
-                String jsonResponse = objectMapper.writeValueAsString(successMessage);
-                return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+                response.put("message","Course Deleted successfully.");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } catch (Exception e) {
-                // Create a response object with the error message
-                String errorMessage = "Something went wrong.";
-                ObjectMapper objectMapper = new ObjectMapper();
-                String jsonResponse = objectMapper.writeValueAsString(errorMessage);
-                return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+                // Create a response object with the success message
+                response.put("message","Something went wrong.");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
         } else {
-            // Create a response object with the not found message
-            String notFoundMessage = "Course not found.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(notFoundMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+            /// Create a response object with the success message
+            response.put("message","Course Not Found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
     // Fetch all courses with day and time information
@@ -176,7 +177,6 @@ public class CourseService {
     }
 
     // Convert CourseDayEntity to CourseDayDTO
-    // Convert CourseDayEntity to CourseDayDTO
     private CourseDayResponse convertToCourseDayDTO(CourseDayEntity courseDay) {
         CourseDayResponse dto = new CourseDayResponse();
         dto.setId(courseDay.getId());
@@ -188,6 +188,8 @@ public class CourseService {
 
     // Add course to favorite
     public ResponseEntity<Object> addToFavorite(int courseId, UserEntity user) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
+
         Optional<CourseEntity> course = courseRepository.findById(courseId);
         if (course.isPresent()) {
             FavoriteEntity favorite = new FavoriteEntity();
@@ -195,46 +197,43 @@ public class CourseService {
             favorite.setCourse(course.get());
             favoriteRepository.save(favorite);
 
-            String successMessage = "Course added to favorites.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            // Create a response object with the success message
+            response.put("message","Course added to favorite successfully.");
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else {
-            String notFoundMessage = "Course not found.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(notFoundMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+            // Create a response object with the success message
+            response.put("message","Course Not Found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 
     // Remove course from favorite
     public ResponseEntity<Object> deleteFromFavorite(int courseId, UserEntity user) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
         Optional<CourseEntity> course = courseRepository.findById(courseId);
         if (course.isPresent()) {
             FavoriteEntity favorite = favoriteRepository.findByUserAndCourse(user, course.get());
             if (favorite != null) {
                 favoriteRepository.delete(favorite);
 
-                String successMessage = "Course removed from favorites.";
-                ObjectMapper objectMapper = new ObjectMapper();
-                String jsonResponse = objectMapper.writeValueAsString(successMessage);
-                return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+                // Create a response object with the success message
+                response.put("message","Course deleted from favorite successfully.");
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
             } else {
-                String notFoundMessage = "Favorite not found.";
-                ObjectMapper objectMapper = new ObjectMapper();
-                String jsonResponse = objectMapper.writeValueAsString(notFoundMessage);
-                return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+                // Create a response object with the success message
+                response.put("message","Something went wrong.");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
         } else {
-            String notFoundMessage = "Course not found.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(notFoundMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+            // Create a response object with the success message
+            response.put("message","Course Not Found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 
     // Get Course Rate
     public ResponseEntity<Object> getRate(int courseId) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
         Optional<CourseEntity> courseOpt = courseRepository.findById(courseId);
 
         if (courseOpt.isPresent()) {
@@ -249,13 +248,17 @@ public class CourseService {
             // Build response
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonResponse = objectMapper.writeValueAsString(averageRate);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            response.put("Rate",jsonResponse);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
+            // Create a response object with the success message
+            response.put("message","Course Not Found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
     //QR Attendance
     public ResponseEntity<Object> qrAttendance(AttendanceRequest body ,int id) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<UserEntity> student = userRepository.findById(body.getStd_id());
         if (course.isPresent()) {
@@ -267,18 +270,17 @@ public class CourseService {
             attendance.setAttDate(LocalDateTime.now());
             attendanceRepository.save(attendance);
 
-            String successMessage = "Thank you for attendance.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            // Create a response object with the success message
+            response.put("message","Thank you for attendance.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        String successMessage = "Some Thing Went wrong.";
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(successMessage);
-        return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+        // Create a response object with the success message
+        response.put("message","Something went wrong.");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
     //Manual Attendance
     public ResponseEntity<Object> manualAttendance(EnrollRequest body, int id) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<UserEntity> student = userRepository.findById(body.getStd_id());
         if (course.isPresent()) {
@@ -290,18 +292,18 @@ public class CourseService {
             attendance.setAttDate(LocalDateTime.now());
             attendanceRepository.save(attendance);
 
-            String successMessage = "Thank you for attendance.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            // Create a response object with the success message
+            response.put("message","Thank you for attendance.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        String successMessage = "Some Thing Went wrong.";
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(successMessage);
-        return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+        // Create a response object with the success message
+        response.put("message","Something went wrong.");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
     //Add Time and Day for A course
     public ResponseEntity<Object> addDay(DayCourseRequest body, int id) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
+
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<DayEntity> day =dayRepository.findById(body.getDay_id());
         if (course.isPresent()) {
@@ -311,20 +313,20 @@ public class CourseService {
             courseDay.setCourseTime(body.isTime());
             courseDayRepository.save(courseDay);
 
-            String successMessage = "Day & Time added to course.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            // Create a response object with the success message
+            response.put("message","Day & Time added successfully.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
         else {
-            String successMessage = "Course not found.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            // Create a response object with the success message
+            response.put("message","Course Not Found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
     //update Time and Day for A course
     public ResponseEntity<Object> updateDay(DayCourseRequest body, int id) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
+
         Optional<DayEntity> day = dayRepository.findById(id);
         Optional<CourseDayEntity> courseDay = courseDayRepository.findByCourseIdAndDayId(id,body.getDay_id());
         if (courseDay.isPresent()) {
@@ -332,34 +334,32 @@ public class CourseService {
             courseDay.get().setCourseTime(body.isTime());
             courseDayRepository.save(courseDay.get());
 
-            String successMessage = "Day & Time updated to course.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            // Create a response object with the success message
+            response.put("message","Day & Time updated successfully.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
         else {
-            String successMessage = "Some Thing Went wrong.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            // Create a response object with the success message
+            response.put("message","Course Not Found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
     //delete Time and Day for A course
     public ResponseEntity<Object> deleteDay(DayCourseRequest body, int id) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
+
         Optional<CourseDayEntity> courseDay = courseDayRepository.findByCourseIdAndDayId(id,body.getDay_id());
         if (courseDay.isPresent()) {
             courseDayRepository.delete(courseDay.get());
 
-            String successMessage = "Day & Time deleted from course.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            // Create a response object with the success message
+            response.put("message","Day & Time Deleted successfully.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
         else {
-            String successMessage = "Some Thing Went wrong.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            // Create a response object with the success message
+            response.put("message","Course Not Found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
     }

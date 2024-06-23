@@ -14,6 +14,5 @@ public class PlacementTestRequest {
     private String language;
 
     private int maxNum;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime date;
+    private String date;
 }

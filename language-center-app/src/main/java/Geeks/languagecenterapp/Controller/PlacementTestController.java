@@ -17,12 +17,12 @@ public class PlacementTestController {
     private PlacementTestService placementTestService;
     //Create placement test
     @PostMapping("/add")
-    public ResponseEntity<Object> addPlacementTest(@RequestBody PlacementTestRequest body) throws JsonProcessingException {
+    public ResponseEntity<Object> addPlacementTest(@ModelAttribute PlacementTestRequest body) throws JsonProcessingException {
         return placementTestService.add(body);
     }
     //update placement test
     @PostMapping("/update/{id}")
-    public ResponseEntity<Object> updatePlacementTest(@PathVariable("id") int id , @RequestBody PlacementTestRequest body) throws JsonProcessingException {
+    public ResponseEntity<Object> updatePlacementTest(@PathVariable("id") int id , @ModelAttribute PlacementTestRequest body) throws JsonProcessingException {
         return placementTestService.update(body, id);
     }
     //delete placement test
@@ -47,7 +47,7 @@ public class PlacementTestController {
     }
     //book a placement test
     @PostMapping("/book/{placementId}")
-    public ResponseEntity<Object> bookPlacementTest(@PathVariable("placementId") int id , @RequestBody BookRequest body) throws JsonProcessingException {
+    public ResponseEntity<Object> bookPlacementTest(@PathVariable("placementId") int id , @ModelAttribute BookRequest body) throws JsonProcessingException {
         return placementTestService.book(body,id);
     }
     //return All placement test and all the books

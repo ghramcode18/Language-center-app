@@ -185,26 +185,23 @@ public class UserService {
 
     //Enroll in a course
     public ResponseEntity<Object> enroll(EnrollRequest RequestBody, int id) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
 
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<UserEntity> student = userRepository.findById(RequestBody.getStd_id());
         // Check if the placement test exists
         if (!course.isPresent()) {
             // Create a response object with the success message
-            String successMessage = "Course not found.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+            response.put("message","Course Not Found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
         // Check if the booking already exists for this student and course
         Optional<EnrollCourseEntity> existingBooking = enrollCourseRepository.findByUserIdAndCourseId(student.get().getId(), course.get().getId());
         if (existingBooking.isPresent()) {
             // Create a response object with the success message
-            String successMessage = "enroll already exists.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.CONFLICT);
+            response.put("message","Enroll Course Already Exists.");
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
 
         // Create and save the new enroll
@@ -215,23 +212,20 @@ public class UserService {
         enrollCourseRepository.save(enrollCourse);
 
         // Create a response object with the success message
-        String successMessage = "Enrolled added successfully.";
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(successMessage);
-        return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+        response.put("message","Enroll successfully.");
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     //rate course
     public ResponseEntity<Object> rateCourse(RateRequest body, int id) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<UserEntity> student = userRepository.findById(body.getStd_id());
         // Check if the placement test exists
         if (!course.isPresent()) {
             // Create a response object with the success message
-            String successMessage = "Course not found.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+            response.put("message","Course Not Found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
         // Check if the booking already exists for this student and course
@@ -240,28 +234,23 @@ public class UserService {
             existingBooking.get().setRate(body.getRate());
             enrollCourseRepository.save(existingBooking.get());
             // Create a response object with the success message
-            String successMessage = "Rate added successfully....Thank you :)";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            response.put("message","Rate added successfully :).");
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         // Create a response object with the success message
-        String successMessage = "Something went wrong :(";
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(successMessage);
-        return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+        response.put("message","Something went wrong.");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     //rate teacher
     public ResponseEntity<Object> rateTeacher(RateRequest body, int id) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
         Optional<UserEntity> teacher = userRepository.findById(id);
         if (!teacher.isPresent() ) {
             // Create a response object with the success message
-            String successMessage = "You Can not Rate...Teacher Not found.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+            response.put("message","Teacher Not Found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
         Optional<UserRateEntity>  teacherRate = userRateRepository.findById(teacher.get().getId());
         if (teacherRate.isPresent()) {
@@ -272,10 +261,8 @@ public class UserService {
             userRateRepository.save(teacherRate.get());
 
             // Create a response object with the success message
-            String successMessage = "Rate added successfully....Thank you :)";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            response.put("message","Rate added successfully :).");
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
         else {//first Rate
             UserRateEntity newRate = new UserRateEntity();
@@ -286,15 +273,14 @@ public class UserService {
             userRateRepository.save(newRate);
 
             // Create a response object with the success message
-            String successMessage = "Rate added successfully....Thank you :)";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            response.put("message","Rate added successfully :).");
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
     }
 
     public ResponseEntity<Object> getTeacherRate(int id) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
            Optional<UserEntity> teacher = userRepository.findById(id);
            Optional<UserRateEntity> teacherRate = userRateRepository.findByUser(teacher.get());
            if (teacherRate.isPresent()) {
@@ -305,9 +291,12 @@ public class UserService {
                   // Build response
                   ObjectMapper objectMapper = new ObjectMapper();
                   String jsonResponse = objectMapper.writeValueAsString(averageRate);
-                  return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+                  response.put("Rate",jsonResponse);
+                  return new ResponseEntity<>(response, HttpStatus.OK);
               } else {
-                  return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
+               // Create a response object with the success message
+               response.put("message","Teacher Not Found.");
+               return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
               }
     }
 
@@ -322,10 +311,10 @@ public class UserService {
         if (role.equals(UserAccountEnum.TEACHER) || role.equals(UserAccountEnum.ADMIN)) {
             List<String> resultPaths = FilesManagement.uploadMultipleFile(files);
             if (resultPaths == null) {
-                response.put("message:", "No Files Selected");
+                response.put("message", "No Files Selected");
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             } else if (resultPaths.isEmpty()) {
-                response.put("message:", "Error When Uploading Files.. Please Try Again Later");
+                response.put("message", "Error When Uploading Files.. Please Try Again Later");
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             } else {
                 for (String item : resultPaths) {
@@ -339,7 +328,7 @@ public class UserService {
             }
 
         } else {
-            response.put("message:", "Only Teachers And Admins Can Upload Certificates");
+            response.put("message", "Only Teachers And Admins Can Upload Certificates");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
     }

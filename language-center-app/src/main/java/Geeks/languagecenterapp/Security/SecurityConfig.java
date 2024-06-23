@@ -19,7 +19,7 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/auth/register", "api/auth/login" )
+                        .requestMatchers("api/auth/register", "api/auth/login","api/post/add","api/post/get/all","api/post/delete/{id}","api/post/update/{id}")
                         .permitAll()
                         .anyRequest()
                         .authenticated());

@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -23,6 +25,8 @@ public class PostService {
 
     //Add Post by admin and return ok , return bad request response otherwise
     public ResponseEntity<Object> add(PostRequest postRequest) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
+
         try {
             PostEntity post = new PostEntity();
             post.setTitle(postRequest.getTitle());
@@ -32,21 +36,18 @@ public class PostService {
             postRepository.save(post);
 
             // Create a response object with the success message
-            String successMessage = "Post added successfully.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(successMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+            response.put("message","Post added successfully.");
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (Exception e) {
-            // Create a response object with the error message
-            String errorMessage = "Something went wrong.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(errorMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+            // Create a response object with the success message
+            response.put("message","Something went wrong.");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 
     //Search for post by id ...if found -> update info ...else return not found response
     public ResponseEntity<Object> update(PostRequest postRequest, int id) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
         Optional<PostEntity> post = postRepository.findById(id);
         if (post.isPresent()) {
             try {
@@ -55,51 +56,40 @@ public class PostService {
                 postRepository.save(post.get());
 
                 // Create a response object with the success message
-                String successMessage = "Post updated successfully.";
-                ObjectMapper objectMapper = new ObjectMapper();
-                String jsonResponse = objectMapper.writeValueAsString(successMessage);
-                return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+                response.put("message","Post updated successfully.");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } catch (Exception e) {
-                // Create a response object with the error message
-                String errorMessage = "Something went wrong.";
-                ObjectMapper objectMapper = new ObjectMapper();
-                String jsonResponse = objectMapper.writeValueAsString(errorMessage);
-                return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+                // Create a response object with the success message
+                response.put("message","Something went wrong.");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
         } else {
-            // Create a response object with the not found message
-            String notFoundMessage = "Post not found.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(notFoundMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+            // Create a response object with the success message
+            response.put("message","Post not found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 
     //Search for post by id ...if found -> delete info ...else return not found response
     public ResponseEntity<Object> delete(int id) throws JsonProcessingException {
+        Map <String,String> response = new HashMap<>();
         Optional<PostEntity> post = postRepository.findById(id);
         if (post.isPresent()) {
             try {
                 postRepository.delete(post.get());
 
                 // Create a response object with the success message
-                String successMessage = "Post deleted successfully.";
-                ObjectMapper objectMapper = new ObjectMapper();
-                String jsonResponse = objectMapper.writeValueAsString(successMessage);
-                return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
+                response.put("message","Post deleted successfully.");
+                return new ResponseEntity<>(response, HttpStatus.OK);
             } catch (Exception e) {
-                // Create a response object with the error message
-                String errorMessage = "Something went wrong.";
-                ObjectMapper objectMapper = new ObjectMapper();
-                String jsonResponse = objectMapper.writeValueAsString(errorMessage);
-                return new ResponseEntity<>(jsonResponse, HttpStatus.BAD_REQUEST);
+                // Create a response object with the success message
+                response.put("message","Something went wrong.");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
         } else {
-            // Create a response object with the not found message
-            String notFoundMessage = "Post not found.";
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(notFoundMessage);
-            return new ResponseEntity<>(jsonResponse, HttpStatus.NOT_FOUND);
+            // Create a response object with the success message
+            response.put("message","Post not found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
     //get all posts

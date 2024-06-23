@@ -5,7 +5,6 @@ import Geeks.languagecenterapp.DTO.Request.CourseRequest;
 import Geeks.languagecenterapp.DTO.Request.DayCourseRequest;
 import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
 import Geeks.languagecenterapp.DTO.Response.CourseResponse;
-import Geeks.languagecenterapp.Model.CourseEntity;
 import Geeks.languagecenterapp.Model.UserEntity;
 import Geeks.languagecenterapp.Service.CourseService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,12 +22,12 @@ public class CourseController {
     private CourseService courseService;
     //Create Course
     @PostMapping("/add")
-    public ResponseEntity<Object> addCourse(@RequestBody CourseRequest body) throws JsonProcessingException {
+    public ResponseEntity<?> addCourse( @ModelAttribute CourseRequest body) throws JsonProcessingException {
         return courseService.add(body);
     }
     //update Course
     @PostMapping("/update/{id}")
-    public ResponseEntity<Object>updateCourse(@PathVariable("id") int id , @RequestBody CourseRequest body)throws JsonProcessingException{
+    public ResponseEntity<Object>updateCourse(@PathVariable("id") int id , @ModelAttribute CourseRequest body)throws JsonProcessingException{
         return courseService.update(body, id);
     }
     //delete Course
@@ -38,17 +37,17 @@ public class CourseController {
     }
     //Add Time and Day for A course
     @PostMapping("/add-day/{id}")
-    public ResponseEntity<Object> addTimeDay(@PathVariable("id") int id ,@RequestBody DayCourseRequest body) throws JsonProcessingException {
+    public ResponseEntity<Object> addTimeDay(@PathVariable("id") int id ,@ModelAttribute DayCourseRequest body) throws JsonProcessingException {
         return courseService.addDay(body,id);
     }
     //update Time and Day for A course
     @PostMapping("/update-day/{id}")
-    public ResponseEntity<Object> updateTimeDay(@PathVariable("id") int id ,@RequestBody DayCourseRequest body) throws JsonProcessingException {
+    public ResponseEntity<Object> updateTimeDay(@PathVariable("id") int id ,@ModelAttribute DayCourseRequest body) throws JsonProcessingException {
         return courseService.updateDay(body,id);
     }
     //delete Time and Day for A course
     @DeleteMapping("/delete-day/{id}")
-    public ResponseEntity<Object> deleteTimeDay(@PathVariable("id") int id ,@RequestBody DayCourseRequest body) throws JsonProcessingException {
+    public ResponseEntity<Object> deleteTimeDay(@PathVariable("id") int id ,@ModelAttribute DayCourseRequest body) throws JsonProcessingException {
         return courseService.deleteDay(body,id);
     }
     //get All Courses
@@ -75,12 +74,12 @@ public class CourseController {
     }
     // QR Attendance
     @PostMapping("/qr-attendance/{id}")
-    public ResponseEntity<Object> qrAttendance(@PathVariable("id") int id ,@RequestBody AttendanceRequest body) throws JsonProcessingException {
+    public ResponseEntity<Object> qrAttendance(@PathVariable("id") int id ,@ModelAttribute AttendanceRequest body) throws JsonProcessingException {
         return courseService.qrAttendance(body,id);
     }
     //Manual Attendance
     @PostMapping("/manual-attendance/{id}")
-    public ResponseEntity<Object> manualAttendance(@PathVariable("id") int id ,@RequestBody EnrollRequest body) throws JsonProcessingException {
+    public ResponseEntity<Object> manualAttendance(@PathVariable("id") int id ,@ModelAttribute EnrollRequest body) throws JsonProcessingException {
         return courseService.manualAttendance(body,id);
     }
 

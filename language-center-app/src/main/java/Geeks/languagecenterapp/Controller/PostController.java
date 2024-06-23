@@ -16,12 +16,12 @@ public class PostController {
     private PostService postService;
     //Create post
     @PostMapping("/add")
-    public ResponseEntity<Object> addPost(@RequestBody PostRequest body) throws JsonProcessingException {
+    public ResponseEntity<Object> addPost(@ModelAttribute PostRequest body) throws JsonProcessingException {
         return postService.add(body);
     }
     //update post
     @PostMapping("/update/{id}")
-    public ResponseEntity<Object>updatePost(@PathVariable("id") int id , @RequestBody PostRequest body)throws JsonProcessingException{
+    public ResponseEntity<Object>updatePost(@PathVariable("id") int id , @ModelAttribute PostRequest body)throws JsonProcessingException{
         return postService.update(body, id);
     }
     //delete post

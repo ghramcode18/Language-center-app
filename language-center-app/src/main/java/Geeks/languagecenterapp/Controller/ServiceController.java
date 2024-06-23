@@ -19,12 +19,12 @@ public class ServiceController {
 
     //Create Service
     @PostMapping("/add")
-    public ResponseEntity<Object> addService(@RequestBody ServiceRequest body) throws JsonProcessingException {
+    public ResponseEntity<Object> addService(@ModelAttribute ServiceRequest body) throws JsonProcessingException {
         return serviceService.add(body);
     }
     //update Service
     @PostMapping("/update/{id}")
-    public ResponseEntity<Object> updateService(@PathVariable("id") int id, @RequestBody ServiceRequest body) throws JsonProcessingException {
+    public ResponseEntity<Object> updateService(@PathVariable("id") int id, @ModelAttribute ServiceRequest body) throws JsonProcessingException {
         return serviceService.update(body, id);
     }
     //delete Service

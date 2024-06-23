@@ -49,17 +49,17 @@ public class UserController {
     }
     // Enroll Course
     @PostMapping("/enroll-course/{courseId}")
-    public ResponseEntity<Object> enrollCourse(@PathVariable("courseId") int id, @RequestBody EnrollRequest body) throws JsonProcessingException {
+    public ResponseEntity<Object> enrollCourse(@PathVariable("courseId") int id, @ModelAttribute EnrollRequest body) throws JsonProcessingException {
         return userService.enroll(body, id);
     }
     // Rate Course
     @PostMapping("/rate-course/{courseId}")
-    public ResponseEntity<Object> rateCourse(@PathVariable("courseId") int id, @RequestBody RateRequest body) throws JsonProcessingException {
+    public ResponseEntity<Object> rateCourse(@PathVariable("courseId") int id, @ModelAttribute RateRequest body) throws JsonProcessingException {
         return userService.rateCourse(body, id);
     }
     // Rate teacher
     @PostMapping("/rate-teacher/{teacherId}")
-    public ResponseEntity<Object> rateTeacher(@PathVariable("teacherId") int id, @RequestBody RateRequest body) throws JsonProcessingException {
+    public ResponseEntity<Object> rateTeacher(@PathVariable("teacherId") int id, @ModelAttribute RateRequest body) throws JsonProcessingException {
         return userService.rateTeacher(body, id);
     }
     // Get Teacher Rate
