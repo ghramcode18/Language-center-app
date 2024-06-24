@@ -68,7 +68,8 @@ public class PostService {
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (Exception e) {
             // Create a response object with the success message
-            response.put("message",e.getMessage());
+            response.put("message","Something went wrong");
+            response.put("error",e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -108,6 +109,7 @@ public class PostService {
             } catch (Exception e) {
                 // Create a response object with the success message
                 response.put("message","Something went wrong.");
+                response.put("error",e.getMessage());
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
@@ -131,6 +133,7 @@ public class PostService {
             } catch (Exception e) {
                 // Create a response object with the success message
                 response.put("message","Something went wrong.");
+                response.put("error",e.getMessage());
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
