@@ -1,5 +1,6 @@
 package Geeks.languagecenterapp.Model;
 
+import Geeks.languagecenterapp.Model.Enum.PostImageEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class CourseImageEntity {
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -27,4 +29,6 @@ public class CourseImageEntity {
     private PostEntity post;
 
     private String imgUrl;
+
+    private PostImageEnum imageType;
 }

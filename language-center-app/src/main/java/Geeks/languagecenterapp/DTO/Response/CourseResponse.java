@@ -1,5 +1,7 @@
 package Geeks.languagecenterapp.DTO.Response;
 
+import Geeks.languagecenterapp.Model.CourseImageEntity;
+import Geeks.languagecenterapp.Model.ImageEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,4 +23,5 @@ public class CourseResponse {
     private double progress;
     private String level;
     private List<CourseDayResponse> courseDayList;
+    private CourseImageEntity image;
 }

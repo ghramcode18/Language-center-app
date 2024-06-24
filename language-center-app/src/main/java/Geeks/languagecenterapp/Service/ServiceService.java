@@ -7,6 +7,7 @@ import Geeks.languagecenterapp.DTO.Response.ServiceWithCourseResponse;
 import Geeks.languagecenterapp.Model.CourseDayEntity;
 import Geeks.languagecenterapp.Model.CourseEntity;
 import Geeks.languagecenterapp.Model.ServiceEntity;
+import Geeks.languagecenterapp.Repository.CourseImageRepository;
 import Geeks.languagecenterapp.Repository.CourseRepository;
 import Geeks.languagecenterapp.Repository.ServiceRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,6 +28,8 @@ public class ServiceService {
     private ServiceRepository serviceRepository;
     @Autowired
     private CourseRepository courseRepository;
+    @Autowired
+    private CourseImageRepository courseImageRepository;
 
     //Add Services by admin and return ok , return bad request response otherwise
     public ResponseEntity<Object> add(ServiceRequest serviceRequest) throws JsonProcessingException {
@@ -124,7 +127,7 @@ public class ServiceService {
         dto.setStartDate(courseEntity.getStartDate());
         dto.setProgress(courseEntity.getProgress());
         dto.setLevel(courseEntity.getLevel());
-
+        dto.setImage(courseImageRepository.findByCourseId(courseEntity.getId()));
         List<CourseDayResponse> courseDayDTOs = courseEntity.getCourseDayList().stream()
                 .map(this::mapToCourseDayDTO)
                 .collect(Collectors.toList());
@@ -134,7 +137,6 @@ public class ServiceService {
 
     private CourseDayResponse mapToCourseDayDTO(CourseDayEntity courseDayEntity) {
         CourseDayResponse dto = new CourseDayResponse();
-        dto.setId(courseDayEntity.getId());
         dto.setDay(courseDayEntity.getDay().getDay());
         dto.setCourseTime(courseDayEntity.isCourseTime() ? "Morning" : "Evening");
         return dto;

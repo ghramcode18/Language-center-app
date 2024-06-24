@@ -1,12 +1,9 @@
 package Geeks.languagecenterapp.DTO.Request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.aspectj.bridge.IMessage;
-import org.springframework.lang.NonNull;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -32,4 +29,6 @@ public class CourseRequest {
     private String startDate;
 
     private String  level;
+
+    private MultipartFile image;
 }

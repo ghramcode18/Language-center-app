@@ -7,8 +7,11 @@ import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
 import Geeks.languagecenterapp.DTO.Response.CourseDayResponse;
 import Geeks.languagecenterapp.DTO.Response.CourseResponse;
 import Geeks.languagecenterapp.Model.*;
+import Geeks.languagecenterapp.Model.Enum.ImageEnum;
+import Geeks.languagecenterapp.Model.Enum.PostImageEnum;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Repository.*;
+import Geeks.languagecenterapp.Tools.FilesManagement;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
@@ -43,6 +43,8 @@ public class CourseService {
     private DayRepository dayRepository;
     @Autowired
     private CourseDayRepository courseDayRepository;
+    @Autowired
+    private CourseImageRepository courseImageRepository;
 
 
     //Add Course by admin and return ok , return bad request response otherwise
@@ -52,7 +54,7 @@ public class CourseService {
             CourseEntity course = new CourseEntity();
             Optional<UserEntity> teacher = userRepository.findById(courseRequest.getTeacher_id());
             Optional<ServiceEntity> service=serviceRepository.findById(courseRequest.getService_id());
-            if (teacher.isPresent() && service.isPresent() && teacher.get().getAccountType() == UserAccountEnum.TEACHER) {
+            if (teacher.isPresent() && service.isPresent() ){//&& teacher.get().getAccountType() == UserAccountEnum.TEACHER) {
                 course.setUser(teacher.get());
                 course.setService(service.get());
                 course.setTitle(courseRequest.getTitle());
@@ -67,6 +69,15 @@ public class CourseService {
                 course.setStartDate(parsedStartDate);
                 course.setLevel(courseRequest.getLevel());
                 courseRepository.save(course);
+                String imageUrl = FilesManagement.uploadSingleFile(courseRequest.getImage());
+                if (imageUrl != null) {
+                    CourseImageEntity imageEntity = new CourseImageEntity();
+                    // initialize Image Object
+                    imageEntity.setImgUrl(imageUrl);
+                    imageEntity.setImageType(PostImageEnum.Course_Img);
+                    imageEntity.setCourse(course);
+                    courseImageRepository.save(imageEntity);
+                }
                 // Create a response object with the success message
                 response.put("message","Course added successfully.");
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -115,9 +126,18 @@ public class CourseService {
                     // Manually parse the startDate from String to LocalDateTime
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                     LocalDateTime parsedStartDate = LocalDateTime.parse(courseRequest.getStartDate(), formatter);
-                    course.get().setStartDate(parsedStartDate);                    course.get().setLevel(courseRequest.getLevel());
+                    course.get().setStartDate(parsedStartDate);
+                    course.get().setLevel(courseRequest.getLevel());
                     courseRepository.save(course.get());
-                    // Create a response object with the success message
+                    String imageUrl = FilesManagement.uploadSingleFile(courseRequest.getImage());
+                    if (imageUrl != null) {
+                        CourseImageEntity imageEntity = new CourseImageEntity();
+                        // initialize Image Object
+                        imageEntity.setImgUrl(imageUrl);
+                        imageEntity.setImageType(PostImageEnum.Course_Img);
+                        imageEntity.setCourse(course.get());
+                        courseImageRepository.save(imageEntity);
+                    }
                     // Create a response object with the success message
                     response.put("message","Course updated successfully.");
                     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -181,7 +201,7 @@ public class CourseService {
         dto.setStartDate(course.getStartDate());
         dto.setProgress(course.getProgress());
         dto.setLevel(course.getLevel());
-
+        dto.setImage(courseImageRepository.findByCourseId(course.getId()));
         List<CourseDayResponse> courseDayDTOs = course.getCourseDayList().stream().map(this::convertToCourseDayDTO).collect(Collectors.toList());
         dto.setCourseDayList(courseDayDTOs);
         return dto;
@@ -190,7 +210,6 @@ public class CourseService {
     // Convert CourseDayEntity to CourseDayDTO
     private CourseDayResponse convertToCourseDayDTO(CourseDayEntity courseDay) {
         CourseDayResponse dto = new CourseDayResponse();
-        dto.setId(courseDay.getId());
         dto.setDay(courseDay.getDay().getDay());
         dto.setCourseTime(courseDay.isCourseTime() ? "Morning" : "Evening");
         return dto;

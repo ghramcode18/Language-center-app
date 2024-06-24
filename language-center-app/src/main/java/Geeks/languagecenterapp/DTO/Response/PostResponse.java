@@ -1,10 +1,10 @@
-package Geeks.languagecenterapp.DTO.Request;
+package Geeks.languagecenterapp.DTO.Response;
 
+import Geeks.languagecenterapp.Model.CourseImageEntity;
 import Geeks.languagecenterapp.Model.Enum.PostEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,15 +12,14 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PostRequest {
+public class PostResponse {
     private String title;
 
     private String content;
 
     private PostEnum type;
 
-    private MultipartFile cover;
+    private LocalDateTime createdAt;
 
-    private List<MultipartFile> images;
-
+    private List<CourseImageEntity> images;
 }
