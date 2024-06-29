@@ -179,7 +179,7 @@ public class UserService {
     }
 
     //Enroll in a course
-    public ResponseEntity<Object> enroll(EnrollRequest RequestBody, int id) throws JsonProcessingException {
+    public ResponseEntity<Object> enroll(EnrollRequest RequestBody, int id) {
         Map <String,String> response = new HashMap<>();
 
         Optional<CourseEntity> course = courseRepository.findById(id);
@@ -212,7 +212,7 @@ public class UserService {
     }
 
     //rate course
-    public ResponseEntity<Object> rateCourse(RateRequest body, int id) throws JsonProcessingException {
+    public ResponseEntity<Object> rateCourse(RateRequest body, int id)  {
         Map <String,String> response = new HashMap<>();
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<UserEntity> student = userRepository.findById(body.getStd_id());

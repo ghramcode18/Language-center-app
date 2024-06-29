@@ -1,13 +1,17 @@
 package Geeks.languagecenterapp.Service;
 
+import Geeks.languagecenterapp.DTO.Request.BookRequest;
 import Geeks.languagecenterapp.DTO.Request.QuestionQuizRequest;
 import Geeks.languagecenterapp.DTO.Request.QuestionRequest;
 import Geeks.languagecenterapp.DTO.Request.QuizRequest;
 import Geeks.languagecenterapp.DTO.Response.*;
 import Geeks.languagecenterapp.Model.*;
+import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Repository.QuestionRepository;
 import Geeks.languagecenterapp.Repository.QuizQuestionRepository;
 import Geeks.languagecenterapp.Repository.QuizRepository;
+import Geeks.languagecenterapp.Repository.UserQuizRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +34,8 @@ public class QuizService {
 
     @Autowired
     private QuizQuestionRepository quizQuestionRepository;
+    @Autowired
+    private UserQuizRepository userQuizRepository;
 
     //Add question by admin and return ok , return bad request response otherwise
     public ResponseEntity<?> addQuestion(QuestionRequest questionRequest) {
@@ -286,5 +292,35 @@ public class QuizService {
         dto.setOptions(question.getOptions());
         dto.setAnswer(question.getCorrectAnswer());
         return dto;
+    }
+
+    //Book a placement test
+    public ResponseEntity<Object> takeQuiz(UserEntity user , int id) {
+        Map<String, String> response = new HashMap<>();
+
+        Optional<QuizEntity> quiz = quizRepository.findById(id);
+
+        // Check if the placement test exists
+        if (!quiz.isPresent()) {
+            // Create a response object with the success message
+            response.put("message","Quiz Not Found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        // Check if the booking already exists for this user and placement test
+        Optional<UserQuizEntity> existingBooking = userQuizRepository.findByUserIdAndQuizId(user.getId(), quiz.get().getId());
+        if (existingBooking.isPresent()) {
+            // Create a response object with the success message
+            response.put("message","Quiz already taken.");
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+        UserQuizEntity userQuiz = new UserQuizEntity();
+        userQuiz.setQuiz(quiz.get());
+        userQuiz.setUser(user);
+        userQuiz.setAssignedAt(LocalDateTime.now());
+        userQuizRepository.save(userQuiz);
+        // Create a response object with the success message
+        response.put("message","Quiz taken Successfully.");
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

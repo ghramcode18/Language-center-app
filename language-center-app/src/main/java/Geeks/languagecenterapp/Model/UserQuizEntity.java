@@ -33,7 +33,4 @@ public class UserQuizEntity {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime assignedAt;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime completedAt;
-
 }

@@ -7,7 +7,6 @@ import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
 import Geeks.languagecenterapp.DTO.Response.CourseDayResponse;
 import Geeks.languagecenterapp.DTO.Response.CourseResponse;
 import Geeks.languagecenterapp.Model.*;
-import Geeks.languagecenterapp.Model.Enum.ImageEnum;
 import Geeks.languagecenterapp.Model.Enum.PostImageEnum;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Repository.*;
@@ -219,7 +218,7 @@ public class CourseService {
 
 
     // Add course to favorite
-    public ResponseEntity<Object> addToFavorite(int courseId, UserEntity user) throws JsonProcessingException {
+    public ResponseEntity<Object> addToFavorite(int courseId, UserEntity user){
         Map <String,String> response = new HashMap<>();
 
         Optional<CourseEntity> course = courseRepository.findById(courseId);
@@ -240,7 +239,7 @@ public class CourseService {
     }
 
     // Remove course from favorite
-    public ResponseEntity<Object> deleteFromFavorite(int courseId, UserEntity user) throws JsonProcessingException {
+    public ResponseEntity<Object> deleteFromFavorite(int courseId, UserEntity user){
         Map <String,String> response = new HashMap<>();
         Optional<CourseEntity> course = courseRepository.findById(courseId);
         if (course.isPresent()) {
@@ -289,7 +288,7 @@ public class CourseService {
         }
     }
     //QR Attendance
-    public ResponseEntity<Object> qrAttendance(AttendanceRequest body ,int id) throws JsonProcessingException {
+    public ResponseEntity<Object> qrAttendance(AttendanceRequest body ,int id){
         Map <String,String> response = new HashMap<>();
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<UserEntity> student = userRepository.findById(body.getStd_id());
@@ -317,7 +316,7 @@ public class CourseService {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
     //Manual Attendance
-    public ResponseEntity<Object> manualAttendance(EnrollRequest body, int id) throws JsonProcessingException {
+    public ResponseEntity<Object> manualAttendance(EnrollRequest body, int id)  {
         Map <String,String> response = new HashMap<>();
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<UserEntity> student = userRepository.findById(body.getStd_id());
@@ -345,7 +344,7 @@ public class CourseService {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
     //Add Time and Day for A course
-    public ResponseEntity<Object> addDay(DayCourseRequest body, int id) throws JsonProcessingException {
+    public ResponseEntity<Object> addDay(DayCourseRequest body, int id) {
         Map <String,String> response = new HashMap<>();
 
         Optional<CourseEntity> course = courseRepository.findById(id);
@@ -368,7 +367,7 @@ public class CourseService {
         }
     }
     //update Time and Day for A course
-    public ResponseEntity<Object> updateDay(DayCourseRequest body, int id) throws JsonProcessingException {
+    public ResponseEntity<Object> updateDay(DayCourseRequest body, int id)  {
         Map <String,String> response = new HashMap<>();
 
         Optional<DayEntity> day = dayRepository.findById(id);
@@ -389,7 +388,7 @@ public class CourseService {
         }
     }
     //delete Time and Day for A course
-    public ResponseEntity<Object> deleteDay(DayCourseRequest body, int id) throws JsonProcessingException {
+    public ResponseEntity<Object> deleteDay(DayCourseRequest body, int id) {
         Map <String,String> response = new HashMap<>();
 
         Optional<CourseDayEntity> courseDay = courseDayRepository.findByCourseIdAndDayId(id,body.getDay_id());

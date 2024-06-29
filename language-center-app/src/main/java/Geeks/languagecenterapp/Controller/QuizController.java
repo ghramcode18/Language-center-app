@@ -1,11 +1,15 @@
 package Geeks.languagecenterapp.Controller;
+import Geeks.languagecenterapp.DTO.Request.BookRequest;
 import Geeks.languagecenterapp.DTO.Request.QuestionQuizRequest;
 import Geeks.languagecenterapp.DTO.Request.QuestionRequest;
 import Geeks.languagecenterapp.DTO.Request.QuizRequest;
 import Geeks.languagecenterapp.DTO.Response.QuizResponse;
+import Geeks.languagecenterapp.Model.UserEntity;
 import Geeks.languagecenterapp.Service.QuizService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -65,5 +69,10 @@ public class QuizController {
     public ResponseEntity<List<QuizResponse>> getAllQuizzesWithQuestions() {
         List<QuizResponse> quizzes = quizService.getAllQuizzesWithQuestions();
         return ResponseEntity.ok(quizzes);
+    }
+    //book a placement test
+    @PostMapping("/take-quiz/{quizId}")
+    public ResponseEntity<Object> bookPlacementTest(@AuthenticationPrincipal UserEntity user,@PathVariable("quizId") int id ) {
+        return quizService.takeQuiz(user,id);
     }
 }

@@ -126,7 +126,7 @@ public class PlacementTestService {
     }
 
     //Book a placement test
-    public ResponseEntity<Object> book(BookRequest RequestBody , int id) throws JsonProcessingException {
+    public ResponseEntity<Object> book(BookRequest RequestBody , int id){
         Map<String, String> response = new HashMap<>();
 
         Optional<PlacementTestEntity> placementTest = placementTestRepository.findById(id);
