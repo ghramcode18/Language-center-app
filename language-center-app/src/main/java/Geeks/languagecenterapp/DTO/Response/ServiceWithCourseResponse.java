@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class ServiceWithCourseResponse {
+    private int ServiceId;
     private String name;
 
     private List<CourseResponse> courses;

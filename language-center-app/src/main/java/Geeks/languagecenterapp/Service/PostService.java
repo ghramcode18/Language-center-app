@@ -151,6 +151,7 @@ public class PostService {
     // Convert CourseEntity to CourseDTO
     private PostResponse convertToDTO(PostEntity post) {
         PostResponse dto = new PostResponse();
+        dto.setPostId(post.getId());
         dto.setTitle(post.getTitle());
         dto.setContent(post.getContent());
         dto.setType(post.getType());

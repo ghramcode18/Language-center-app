@@ -184,82 +184,103 @@ public class QuizService {
     }
 
     //Add Question for A quiz
-    public ResponseEntity<Object> addQuestionToQuiz(QuestionQuizRequest body, int id) {
-        Map <String,String> response = new HashMap<>();
+    public ResponseEntity<Object> addQuestionToQuiz(QuestionQuizRequest body, int quizId) {
+        Map<String, String> response = new HashMap<>();
+        Optional<QuizEntity> quizOpt = quizRepository.findById(quizId);
 
-        Optional<QuizEntity> quiz = quizRepository.findById(id);
-        Optional<QuestionEntity> question =questionRepository.findById(body.getQuestion_id());
-        if (quiz.isPresent()) {
-            QuizQuestionEntity quizQuestion = new QuizQuestionEntity();
-            quizQuestion.setQuiz(quiz.get());
-            quizQuestion.setQuestion(question.get());
-
-            quizQuestionRepository.save(quizQuestion);
-
-            // Create a response object with the success message
-            response.put("message","Question added to The Quiz successfully.");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        if(!question.isPresent()){
-            // Create a response object with the success message
-            response.put("message","Question Not Found.");
+        if (!quizOpt.isPresent()) {
+            response.put("message", "Quiz not found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
-        else {
-            // Create a response object with the success message
-            response.put("message","Quiz Not Found.");
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-    }
-    //Update Question for A quiz
-    public ResponseEntity<Object> updateQuestionToQuiz(QuestionQuizRequest body, int id)  {
-        Map <String,String> response = new HashMap<>();
 
-        Optional<QuizEntity> quiz = quizRepository.findById(id);
-        Optional<QuestionEntity> question =questionRepository.findById(body.getQuestion_id());
-        Optional<QuizQuestionEntity> quizQuestion = quizQuestionRepository.findByQuizIdAndQuestionId(quiz.get().getId(), body.getQuestion_id());
-        if (quiz.isPresent() && question.isPresent()) {
-            if (quizQuestion.isPresent()) {
-                // Create a response object with the success message
-                response.put("message","Question already exists in the Quiz.");
+        QuizEntity quiz = quizOpt.get();
+        for (Integer questionId : body.getQuestion_ids()) {
+            Optional<QuestionEntity> questionOpt = questionRepository.findById(questionId);
+
+            if (!questionOpt.isPresent()) {
+                response.put("message", "Question ID " + questionId + " not found.");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
+            QuestionEntity question = questionOpt.get();
+            Optional<QuizQuestionEntity> existingRelation = quizQuestionRepository.findByQuizIdAndQuestionId(quiz.getId(), questionId);
+
+            if (existingRelation.isPresent()) {
+                response.put("message", "Question ID " + questionId + " already exists in the Quiz.");
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
             }
-            else {
-                QuizQuestionEntity newQuizQuestion = new QuizQuestionEntity();
-                newQuizQuestion.setQuiz(quiz.get());
-                newQuizQuestion.setQuestion(question.get());
-                quizQuestionRepository.save(newQuizQuestion);
 
-                // Create a response object with the success message
-                response.put("message","Question added to The Quiz successfully.");
-                return new ResponseEntity<>(response, HttpStatus.OK);
+            QuizQuestionEntity quizQuestion = new QuizQuestionEntity();
+            quizQuestion.setQuiz(quiz);
+            quizQuestion.setQuestion(question);
+            quizQuestionRepository.save(quizQuestion);
+        }
+
+        response.put("message", "Questions added to the Quiz successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    //Update Question for A quiz
+    public ResponseEntity<Object> updateQuestionToQuiz(QuestionQuizRequest body, int quizId) {
+        Map<String, String> response = new HashMap<>();
+        Optional<QuizEntity> quizOpt = quizRepository.findById(quizId);
+
+        if (!quizOpt.isPresent()) {
+            response.put("message", "Quiz not found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        QuizEntity quiz = quizOpt.get();
+        for (Integer questionId : body.getQuestion_ids()) {
+            Optional<QuestionEntity> questionOpt = questionRepository.findById(questionId);
+
+            if (!questionOpt.isPresent()) {
+                response.put("message", "Question ID " + questionId + " not found.");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
 
+            QuestionEntity question = questionOpt.get();
+            Optional<QuizQuestionEntity> existingRelation = quizQuestionRepository.findByQuizIdAndQuestionId(quiz.getId(), questionId);
+
+            if (existingRelation.isPresent()) {
+                response.put("message", "Question ID " + questionId + " already exists in the Quiz.");
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
+
+            QuizQuestionEntity quizQuestion = new QuizQuestionEntity();
+            quizQuestion.setQuiz(quiz);
+            quizQuestion.setQuestion(question);
+            quizQuestionRepository.save(quizQuestion);
         }
-        else {
-            // Create a response object with the success message
-            response.put("message","Quiz Or Question Not Found.");
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
+
+        response.put("message", "Questions updated in the Quiz successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     //delete Question from a quiz
-    public ResponseEntity<Object> deleteQuestionFromQuiz(QuestionQuizRequest body, int id) {
-        Map <String,String> response = new HashMap<>();
+    public ResponseEntity<Object> deleteQuestionFromQuiz(QuestionQuizRequest body, int quizId) {
+        Map<String, String> response = new HashMap<>();
+        Optional<QuizEntity> quizOpt = quizRepository.findById(quizId);
 
-        Optional<QuizQuestionEntity> quizQuestion = quizQuestionRepository.findByQuizIdAndQuestionId(id, body.getQuestion_id());
-        if (quizQuestion.isPresent()) {
-            quizQuestionRepository.delete(quizQuestion.get());
-
-            // Create a response object with the success message
-            response.put("message","Question Deleted from Quiz successfully.");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        else {
-            // Create a response object with the success message
-            response.put("message","Quiz Not Found.");
+        if (!quizOpt.isPresent()) {
+            response.put("message", "Quiz not found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
+        QuizEntity quiz = quizOpt.get();
+        for (Integer questionId : body.getQuestion_ids()) {
+            Optional<QuizQuestionEntity> quizQuestionOpt = quizQuestionRepository.findByQuizIdAndQuestionId(quiz.getId(), questionId);
+
+            if (!quizQuestionOpt.isPresent()) {
+                response.put("message", "Question ID " + questionId + " not found in the Quiz.");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
+            quizQuestionRepository.delete(quizQuestionOpt.get());
+        }
+
+        response.put("message", "Questions deleted from the Quiz successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
@@ -273,6 +294,7 @@ public class QuizService {
     // Convert QuizEntity to QuizResponse DTO
     private QuizResponse convertToDTO(QuizEntity quiz) {
         QuizResponse dto = new QuizResponse();
+        dto.setQuizId(quiz.getId());
         dto.setTitle(quiz.getTitle());
         dto.setDescription(quiz.getDescription());
         dto.setCreatedAt(quiz.getCreatedAt());
@@ -288,6 +310,7 @@ public class QuizService {
     // Helper method to map QuestionEntity to QuestionResponse
     private QuestionRequest mapToQuestionResponse(QuestionEntity question) {
         QuestionRequest dto = new QuestionRequest();
+        dto.setQuestionId(question.getId());
         dto.setQuestion(question.getQuestionText());
         dto.setOptions(question.getOptions());
         dto.setAnswer(question.getCorrectAnswer());

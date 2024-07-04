@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class CourseResponse {
+    private int id;
     private String title;
     private String description;
     private double price;

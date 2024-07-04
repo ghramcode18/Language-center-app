@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class QuizResponse {
+    private int quizId;
     private String title;
     private String description;
     private LocalDateTime createdAt;

@@ -116,11 +116,12 @@ public class ServiceService {
                 .map(this::mapToCourseDTO)
                 .collect(Collectors.toList());
 
-        return new ServiceWithCourseResponse(serviceEntity.getName(), courseResponses);
+        return new ServiceWithCourseResponse(serviceEntity.getId(),serviceEntity.getName(), courseResponses);
     }
 
     private CourseResponse mapToCourseDTO(CourseEntity courseEntity) {
         CourseResponse dto = new CourseResponse();
+        dto.setId(courseEntity.getId());
         dto.setTitle(courseEntity.getTitle());
         dto.setDescription(courseEntity.getDescription());
         dto.setPrice(courseEntity.getPrice());

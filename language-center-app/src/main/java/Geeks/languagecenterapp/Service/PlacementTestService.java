@@ -204,6 +204,7 @@ public class PlacementTestService {
                 .collect(Collectors.toList());
 
         return new ScheduleResponse(
+                placementTestEntity.getId(),
                 placementTestEntity.getLanguage(),
                 placementTestEntity.getMaxNum(),
                 placementTestEntity.getDate(),

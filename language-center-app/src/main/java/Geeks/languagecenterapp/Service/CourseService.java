@@ -193,6 +193,7 @@ public class CourseService {
     // Convert CourseEntity to CourseDTO
     private CourseResponse convertToDTO(CourseEntity course) {
         CourseResponse dto = new CourseResponse();
+        dto.setId(course.getId());
         dto.setTitle(course.getTitle());
         dto.setDescription(course.getDescription());
         dto.setPrice(course.getPrice());
