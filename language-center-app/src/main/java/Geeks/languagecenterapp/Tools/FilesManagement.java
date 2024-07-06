@@ -10,7 +10,7 @@ import java.util.Objects;
 
 public class FilesManagement {
 
-    public static final String UPLOAD_DIR = "C:\\Users\\LEGION\\OneDrive\\Desktop\\Language-center-app\\language-center-app\\Images";
+    public static final String UPLOAD_DIR = "C:\\Users\\NAEL PC\\Desktop\\Learning\\SpringBoot\\Projects\\Language-center-app\\language-center-app\\Files";
 
 
     public static String uploadSingleFile(MultipartFile file) {

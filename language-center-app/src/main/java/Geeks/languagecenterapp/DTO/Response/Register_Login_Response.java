@@ -1,6 +1,7 @@
 package Geeks.languagecenterapp.DTO.Response;
 
 import Geeks.languagecenterapp.Model.Enum.GenderEnum;
+import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Model.ImageEntity;
 import lombok.Data;
 import lombok.Getter;
@@ -34,6 +35,8 @@ public class Register_Login_Response {
     private String token;
 
     private String phone;
+
+    private UserAccountEnum role ;
 
     private List<ImageEntity> images;
 

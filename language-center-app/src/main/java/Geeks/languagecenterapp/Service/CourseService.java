@@ -1,9 +1,6 @@
 package Geeks.languagecenterapp.Service;
 
-import Geeks.languagecenterapp.DTO.Request.AttendanceRequest;
-import Geeks.languagecenterapp.DTO.Request.CourseRequest;
-import Geeks.languagecenterapp.DTO.Request.DayCourseRequest;
-import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
+import Geeks.languagecenterapp.DTO.Request.*;
 import Geeks.languagecenterapp.DTO.Response.CourseDayResponse;
 import Geeks.languagecenterapp.DTO.Response.CourseResponse;
 import Geeks.languagecenterapp.Model.*;
@@ -11,13 +8,18 @@ import Geeks.languagecenterapp.Model.Enum.PostImageEnum;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Repository.*;
 import Geeks.languagecenterapp.Tools.FilesManagement;
+import Geeks.languagecenterapp.Tools.HandleCurrentUserSession;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -44,16 +46,18 @@ public class CourseService {
     private CourseDayRepository courseDayRepository;
     @Autowired
     private CourseImageRepository courseImageRepository;
+    @Autowired
+    private MarkRepository markRepository;
 
 
     //Add Course by admin and return ok , return bad request response otherwise
     public ResponseEntity<?> add(CourseRequest courseRequest) throws JsonProcessingException {
-        Map <String,String> response = new HashMap<>();
+        Map<String, String> response = new HashMap<>();
         try {
             CourseEntity course = new CourseEntity();
             Optional<UserEntity> teacher = userRepository.findById(courseRequest.getTeacher_id());
-            Optional<ServiceEntity> service=serviceRepository.findById(courseRequest.getService_id());
-            if (teacher.isPresent() && service.isPresent() ){//&& teacher.get().getAccountType() == UserAccountEnum.TEACHER) {
+            Optional<ServiceEntity> service = serviceRepository.findById(courseRequest.getService_id());
+            if (teacher.isPresent() && service.isPresent()) {//&& teacher.get().getAccountType() == UserAccountEnum.TEACHER) {
                 course.setUser(teacher.get());
                 course.setService(service.get());
                 course.setTitle(courseRequest.getTitle());
@@ -78,41 +82,38 @@ public class CourseService {
                     courseImageRepository.save(imageEntity);
                 }
                 // Create a response object with the success message
-                response.put("message","Course added successfully.");
+                response.put("message", "Course added successfully.");
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
-            }
-            else if(!teacher.isPresent()) {
+            } else if (!teacher.isPresent()) {
                 // Create a response object with the success message
-                response.put("message","Teacher not found.");
+                response.put("message", "Teacher not found.");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-            }
-            else if(!service.isPresent()) {
+            } else if (!service.isPresent()) {
                 // Create a response object with the success message
-                response.put("message","Service not found.");
+                response.put("message", "Service not found.");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-            }
-            else {
+            } else {
                 // Create a response object with the success message
-                response.put("message","Something went wrong.");
+                response.put("message", "Something went wrong.");
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
 
         } catch (Exception e) {
             // Create a response object with the error message
-            response.put("message","Some Error Occurred.");
+            response.put("message", "Some Error Occurred.");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     //Search for Course by id ...if found -> update info ...else return not found response
     public ResponseEntity<Object> update(CourseRequest courseRequest, int id) throws JsonProcessingException {
-        Map <String,String> response = new HashMap<>();
+        Map<String, String> response = new HashMap<>();
 
         Optional<CourseEntity> course = courseRepository.findById(id);
         if (course.isPresent()) {
             try {
                 Optional<UserEntity> user = userRepository.findById(courseRequest.getTeacher_id());
-                Optional<ServiceEntity> service=serviceRepository.findById(courseRequest.getService_id());
+                Optional<ServiceEntity> service = serviceRepository.findById(courseRequest.getService_id());
                 if (user.isPresent() && service.isPresent()) {
                     course.get().setUser(user.get());
                     course.get().setService(service.get());
@@ -138,31 +139,30 @@ public class CourseService {
                         courseImageRepository.save(imageEntity);
                     }
                     // Create a response object with the success message
-                    response.put("message","Course updated successfully.");
+                    response.put("message", "Course updated successfully.");
                     return new ResponseEntity<>(response, HttpStatus.OK);
-                }
-                else {
+                } else {
                     // Create a response object with the success message
-                    response.put("message","Something went wrong.");
+                    response.put("message", "Something went wrong.");
                     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
 
             } catch (Exception e) {
                 // Create a response object with the success message
-                response.put("message","Some Error Occurred.");
-                response.put("error",e.getMessage());
+                response.put("message", "Some Error Occurred.");
+                response.put("error", e.getMessage());
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
             // Create a response object with the success message
-            response.put("message","Course Not Found.");
+            response.put("message", "Course Not Found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 
     //Search for Course by id ...if found -> delete info ...else return not found response
     public ResponseEntity<Object> delete(int id) throws JsonProcessingException {
-        Map <String,String> response = new HashMap<>();
+        Map<String, String> response = new HashMap<>();
 
         Optional<CourseEntity> course = courseRepository.findById(id);
         if (course.isPresent()) {
@@ -170,20 +170,21 @@ public class CourseService {
                 courseRepository.delete(course.get());
 
                 // Create a response object with the success message
-                response.put("message","Course Deleted successfully.");
+                response.put("message", "Course Deleted successfully.");
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } catch (Exception e) {
                 // Create a response object with the success message
-                response.put("message","Something went wrong.");
-                response.put("error",e.getMessage());
+                response.put("message", "Something went wrong.");
+                response.put("error", e.getMessage());
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
             /// Create a response object with the success message
-            response.put("message","Course Not Found.");
+            response.put("message", "Course Not Found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
+
     // Fetch all courses with day and time information
     public List<CourseResponse> getAll() {
         List<CourseEntity> courses = courseRepository.findAll();
@@ -218,8 +219,8 @@ public class CourseService {
 
 
     // Add course to favorite
-    public ResponseEntity<Object> addToFavorite(int courseId, UserEntity user){
-        Map <String,String> response = new HashMap<>();
+    public ResponseEntity<Object> addToFavorite(int courseId, UserEntity user) {
+        Map<String, String> response = new HashMap<>();
 
         Optional<CourseEntity> course = courseRepository.findById(courseId);
         if (course.isPresent()) {
@@ -229,18 +230,18 @@ public class CourseService {
             favoriteRepository.save(favorite);
 
             // Create a response object with the success message
-            response.put("message","Course added to favorite successfully.");
+            response.put("message", "Course added to favorite successfully.");
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else {
             // Create a response object with the success message
-            response.put("message","Course Not Found.");
+            response.put("message", "Course Not Found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 
     // Remove course from favorite
-    public ResponseEntity<Object> deleteFromFavorite(int courseId, UserEntity user){
-        Map <String,String> response = new HashMap<>();
+    public ResponseEntity<Object> deleteFromFavorite(int courseId, UserEntity user) {
+        Map<String, String> response = new HashMap<>();
         Optional<CourseEntity> course = courseRepository.findById(courseId);
         if (course.isPresent()) {
             FavoriteEntity favorite = favoriteRepository.findByUserAndCourse(user, course.get());
@@ -248,23 +249,23 @@ public class CourseService {
                 favoriteRepository.delete(favorite);
 
                 // Create a response object with the success message
-                response.put("message","Course deleted from favorite successfully.");
+                response.put("message", "Course deleted from favorite successfully.");
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             } else {
                 // Create a response object with the success message
-                response.put("message","This Course is Not in Your Favorite.");
+                response.put("message", "This Course is Not in Your Favorite.");
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
         } else {
             // Create a response object with the success message
-            response.put("message","Course Not Found.");
+            response.put("message", "Course Not Found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 
     // Get Course Rate
     public ResponseEntity<Object> getRate(int courseId) throws JsonProcessingException {
-        Map <String,String> response = new HashMap<>();
+        Map<String, String> response = new HashMap<>();
         Optional<CourseEntity> courseOpt = courseRepository.findById(courseId);
 
         if (courseOpt.isPresent()) {
@@ -279,26 +280,27 @@ public class CourseService {
             // Build response
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonResponse = objectMapper.writeValueAsString(averageRate);
-            response.put("Rate",jsonResponse);
+            response.put("Rate", jsonResponse);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             // Create a response object with the success message
-            response.put("message","Course Not Found.");
+            response.put("message", "Course Not Found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
+
     //QR Attendance
-    public ResponseEntity<Object> qrAttendance(AttendanceRequest body ,int id){
-        Map <String,String> response = new HashMap<>();
+    public ResponseEntity<Object> qrAttendance(AttendanceRequest body, int id) {
+        Map<String, String> response = new HashMap<>();
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<UserEntity> student = userRepository.findById(body.getStd_id());
-        Optional<EnrollCourseEntity> enroll= enrollCourseRepository.findByUserIdAndCourseId(student.get().getId(), body.getStd_id());
+        Optional<EnrollCourseEntity> enroll = enrollCourseRepository.findByUserIdAndCourseId(student.get().getId(), body.getStd_id());
         if (!enroll.isPresent()) {
             // Create a response object with the success message
-            response.put("message","This Student Does Not Enrolled In This Course.");
+            response.put("message", "This Student Does Not Enrolled In This Course.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        if (course.isPresent() && student.isPresent() && student.get().getAccountType()==UserAccountEnum.USER) {
+        if (course.isPresent() && student.isPresent() && student.get().getAccountType() == UserAccountEnum.USER) {
             AttendanceEntity attendance = new AttendanceEntity();
             attendance.setCourse(course.get());
             attendance.setUser(student.get());
@@ -308,25 +310,26 @@ public class CourseService {
             attendanceRepository.save(attendance);
 
             // Create a response object with the success message
-            response.put("message","Thank you for attendance :)");
+            response.put("message", "Thank you for attendance :)");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         // Create a response object with the success message
-        response.put("message","Course Not Found.");
+        response.put("message", "Course Not Found.");
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
     //Manual Attendance
-    public ResponseEntity<Object> manualAttendance(EnrollRequest body, int id)  {
-        Map <String,String> response = new HashMap<>();
+    public ResponseEntity<Object> manualAttendance(EnrollRequest body, int id) {
+        Map<String, String> response = new HashMap<>();
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<UserEntity> student = userRepository.findById(body.getStd_id());
-        Optional<EnrollCourseEntity> enroll= enrollCourseRepository.findByUserIdAndCourseId(student.get().getId(), body.getStd_id());
+        Optional<EnrollCourseEntity> enroll = enrollCourseRepository.findByUserIdAndCourseId(student.get().getId(), body.getStd_id());
         if (!enroll.isPresent()) {
             // Create a response object with the success message
-            response.put("message","This Student Does Not Enrolled In This Course.");
+            response.put("message", "This Student Does Not Enrolled In This Course.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        if (course.isPresent() && student.isPresent() && student.get().getAccountType()==UserAccountEnum.USER) {
+        if (course.isPresent() && student.isPresent() && student.get().getAccountType() == UserAccountEnum.USER) {
             AttendanceEntity attendance = new AttendanceEntity();
             attendance.setCourse(course.get());
             attendance.setUser(student.get());
@@ -336,19 +339,20 @@ public class CourseService {
             attendanceRepository.save(attendance);
 
             // Create a response object with the success message
-            response.put("message","Thank you for attendance :)");
+            response.put("message", "Thank you for attendance :)");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         // Create a response object with the success message
-        response.put("message","Course Not Found.");
+        response.put("message", "Course Not Found.");
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
     //Add Time and Day for A course
     public ResponseEntity<Object> addDay(DayCourseRequest body, int id) {
-        Map <String,String> response = new HashMap<>();
+        Map<String, String> response = new HashMap<>();
 
         Optional<CourseEntity> course = courseRepository.findById(id);
-        Optional<DayEntity> day =dayRepository.findById(body.getDay_id());
+        Optional<DayEntity> day = dayRepository.findById(body.getDay_id());
         if (course.isPresent()) {
             CourseDayEntity courseDay = new CourseDayEntity();
             courseDay.setCourse(course.get());
@@ -357,55 +361,120 @@ public class CourseService {
             courseDayRepository.save(courseDay);
 
             // Create a response object with the success message
-            response.put("message","Day & Time added successfully.");
+            response.put("message", "Day & Time added successfully.");
             return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        else {
+        } else {
             // Create a response object with the success message
-            response.put("message","Course Not Found.");
+            response.put("message", "Course Not Found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
+
     //update Time and Day for A course
-    public ResponseEntity<Object> updateDay(DayCourseRequest body, int id)  {
-        Map <String,String> response = new HashMap<>();
+    public ResponseEntity<Object> updateDay(DayCourseRequest body, int id) {
+        Map<String, String> response = new HashMap<>();
 
         Optional<DayEntity> day = dayRepository.findById(id);
-        Optional<CourseDayEntity> courseDay = courseDayRepository.findByCourseIdAndDayId(id,body.getDay_id());
+        Optional<CourseDayEntity> courseDay = courseDayRepository.findByCourseIdAndDayId(id, body.getDay_id());
         if (courseDay.isPresent()) {
             courseDay.get().setDay(day.get());
             courseDay.get().setCourseTime(body.isTime());
             courseDayRepository.save(courseDay.get());
 
             // Create a response object with the success message
-            response.put("message","Day & Time updated successfully.");
+            response.put("message", "Day & Time updated successfully.");
             return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        else {
+        } else {
             // Create a response object with the success message
-            response.put("message","Course Day Not Found.");
+            response.put("message", "Course Day Not Found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
+
     //delete Time and Day for A course
     public ResponseEntity<Object> deleteDay(DayCourseRequest body, int id) {
-        Map <String,String> response = new HashMap<>();
+        Map<String, String> response = new HashMap<>();
 
-        Optional<CourseDayEntity> courseDay = courseDayRepository.findByCourseIdAndDayId(id,body.getDay_id());
+        Optional<CourseDayEntity> courseDay = courseDayRepository.findByCourseIdAndDayId(id, body.getDay_id());
         if (courseDay.isPresent()) {
             courseDayRepository.delete(courseDay.get());
 
             // Create a response object with the success message
-            response.put("message","Course Day Deleted successfully.");
+            response.put("message", "Course Day Deleted successfully.");
             return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        else {
+        } else {
             // Create a response object with the success message
-            response.put("message","Course Not Found.");
+            response.put("message", "Course Not Found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
     }
 
+    public ResponseEntity<?> uploadMarksFile(UploadMarksRequset data) {
+        //Check User Role
+        if (HandleCurrentUserSession.getCurrentUserRole().equals(UserAccountEnum.ADMIN)) {
+            MultipartFile marks = data.getMarksFile();
+
+            if (marks.isEmpty()) {
+                return new ResponseEntity<>("Please upload a marks!", HttpStatus.BAD_REQUEST);
+            }
+
+            if (courseRepository.findById(data.getCourseId()).isEmpty()) {
+                return new ResponseEntity<>("Course With this Id Not Found", HttpStatus.BAD_REQUEST);
+            }
+
+            if (!Objects.requireNonNull(Objects.requireNonNull(marks).getOriginalFilename()).endsWith(".xlsx")) {
+                return new ResponseEntity<>("Please upload an Excel File!", HttpStatus.BAD_REQUEST);
+            }
+
+            List<String[]> result = MarkService.handleExcelFile(marks);
+            if (result.isEmpty()) {
+                return new ResponseEntity<>("Failed to process the file", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            // Upload File To Server
+            String resultPath = FilesManagement.uploadSingleFile(marks);
+            if (resultPath != null) {
+                // Initialize Mark Object
+                MarkEntity markEntity = new MarkEntity();
+                markEntity.setUser(HandleCurrentUserSession.getCurrentUser());
+                markEntity.setCourse(CourseEntity.builder().id(data.getCourseId()).build());
+                markEntity.setFile(resultPath);
+                markEntity.setDate(data.getUploadDate());
+                // Save File In DataBase
+                markRepository.save(markEntity);
+                return new ResponseEntity<>("Marks Successfully Uploaded", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Something Went Wrong .. try again later", HttpStatus.UNAUTHORIZED);
+            }
+        } else {
+            return new ResponseEntity<>("Only Admins Can Upload Marks", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    public ResponseEntity<?> getUserMarks(GetStudentMarksRequest data) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+        Enum<UserAccountEnum> role = user.getAccountType();
+
+        if (data.getPhone() == null) {
+            return new ResponseEntity<>("phone must not be Null", HttpStatus.BAD_REQUEST);
+        } else if (role.equals(UserAccountEnum.USER)) {
+            if (userRepository.findByPhoneNumber(data.getPhone()).isPresent()) {
+                if (markRepository.findFilesByCourseId(data.getCourseId()).isPresent()) {
+                    String markFilePath = markRepository.findFilesByCourseId(data.getCourseId()).get();
+                    List<String[]> markFile = MarkService.handleExcelFile(MarkService.convertFileToMultipartFile(markFilePath));
+                    List<String[]> result = MarkService.searchInExcelFile(markFile, data.getPhone());
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("Course With this Id Not Found", HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>("Student With this Phone Not Found", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>("Get Marks Only For Students", HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }

@@ -134,6 +134,7 @@ public class UserService {
         response.setBio(user.getBio());
         response.setGender(user.getGender());
         response.setDob(user.getDob());
+        response.setRole(user.getAccountType());
         response.setEducation(user.getEducation());
         response.setPhone(user.getPhoneNumber());
         response.setImages(imageRepository.findImageByUserId(user.getId()));
