@@ -1,3 +1,93 @@
+   ${AnsiColor.BRIGHT_WHITE}
+                               .......
+                      .....^!?Y55YYYY5P5J~.
+                   .::~!?YGGBBPYJJ5PGGBGP5YJ!:.
+                .:^!7YPBBG5JJJJ?JPGGGGGGGGPGBJ!!: .~^
+              .~!7JPGP5YJ?7JPPJ5GBGGGP555PGGBP^7G~. .
+             ~JY5GGP5PPGP5GGBPGGGP55PPYJ77JGGBY!GY?
+          .^~!YP5YJJYPGGGPPPP5PP5YP55J?!:..~BBG7JGP.^...
+         :!!?PGG5?7?JY5PGGGGGGPP55PPGPGPY!.:GBG!7J~~~~~^
+         :^!YP55PPGGGBBBBBBBBBBBBBBBBBBBBGJ!PPJ^:^^!?J~?:
+       .:~!YPP55GGGGGBBBBBBBBBBBBBBBBBBBBBBP5J!^^~!?5Y!?~
+    .:!??JPBGPGGPPGGGBBBBBBBBBBBBBBBBBBBBBBGJ7~^~7?Y5YJ!:
+  .:~?J?YGBGPPGGGPGGGBBBBBBBBBBBBBB#BBBBBBBGP!.:~7JJ?7!:.
+.:~?YYJYPGGPPGGGPGGG5YY5PPGBBBBBBBBB#BBBBGGPP5!..^!?7~:.
+~7J5555G##PY555PP5??Y55YYJ77?JBBBBBBBP?!^^~~~7J7^::!JYJ!:
+YPGBBBBB#GJJJ?JJ?7YPBGGGGGPYJJ5B##BPY!^~7YPP5J~~!7:.~!7??7^.
+BB#BGGGGB5?7!7?77?JJYPB##BBGPY5BB#B5~!PB&&BG5J7:::~~?YJJ?7~:
+GBGGGGGGP5J?JJ????7!~::...!7YBGBB##GYGJ7~::^^:. ::.~5B##BPJ?
+PPGBBBGGGP555YJYPGG57^^!J5G##BBBB###GGB#GJ~. .~!~~  7GB#BBPJ
+PGBB#BBGG5Y5PYYPGBBB#########BBGYPBB5?B#&&&#BPPP7~!~G&##GB#B
+GGPPP5J7???5PJ?Y5PGBBB#######P5!. ::  Y######BG5!~?7G&&#BGBG
+BBGPPY7~7?JP5?~7J5PGGBB###BBBGJ?Y5?~.:!#&&##BG5?^~P5?B&&PJPB
+G#B#BG5YJJY5YY~~?Y55PPGBGBB########BBGB####BG57:..^BP5PG7J5~
+?PB#####G5YG5Y?!7JY555PGBBBB57!!!7!~~:^!5B#BP?: .: ~?PJ!!^
+!!?PB##B#BGPGJ?!7JY55PGGBBBY:.:!?G55J^..:PBG57. .:7!~??:  .
+~^:^7YGB##BGGP!~7J5PPGGBBB##GYJJ?YYY7~^!PBBG5!.  :!J?J!.
+~:..^~~JGGGPG?..^!Y5PPGGBBBBBBBBP55YJJYPGGGPJ~. .:~~..
+~~!77!~~7??^^.   .:!J5PGBBBBB##&&&&&&###BG5J^   ~^^       ..
+5GBGYY~...:^!       .:~?YPGGB##&&&&####BP7^.    .   :~:. .^.
+5GB#BJ.:    ~            .::~7??JJ?7?77~.          .^~:...
+PP5J~..^    ^   .                                  .
+...::~7:::.7J!  .:
+..:^!7?JJ!JPGPJ: !~.                           .~^.
+    .... .7~?!?~.~?!:.                         ^55Y.
+      .::^..... ^7???7^..                      .!:.
+               .7YYYYYJ?!~^.
+:..........    ~?Y555555YJ?!^.
+######B5::..::.Y5PP55PPPP5YJ7~:                    ^!^..
+#&&&#BP~^?!Y55JGGBGPPPPPPP55YJ7~..          .J~   7&@@&&#GY?
+#&&#B57~?GGG5P5#B##BGGGGGPPPP5YYJ!^:....  ..^##:  :7&@@@@@@@
+##G&&P7PPGYPGPG#B####BBBBGGGGGGGP5YYY5PP5?7~JG&P::?^7&@@@@@@
+GPB#G77PGGJG#PGBB########BBBBB#BBBBBB##BGPP~P&&P^~~.!G@@@@@@
+PGBB?!JY#GYG&PPBB######################B5J?Y&&B57!:.!##@&@@@
+GBP57YJG&B5P&GPB#######################GP??B&BGG5?:.JP?&&@@@
+B5?Y7PYG&BPP&PGB#######################G57YB#B&GP7:^Y7J&&&&&
+P?J5!PYG&BPP&PBB#######################G57YB##&PP7.^Y?Y&&&&&
+Y755!PJG&BPP&PBB#######################G57YB##&PP7.^Y?Y&&&&&
+Y!YY!PJG&BPP&PGB#######################GP7YB##&PP7.^Y?Y&&&&&
+--------------------------------------------------------------
+ ${AnsiColor.BRIGHT_GREEN}
+                                  .:^~!7???77!~^..
+                           .^75B#&@@@@@@@@@@@&&&#BGY7^.
+                       .!5#&@@@@@@@@@@@@@@@@@@&&&&###BP?:
+                    :?B&&@@@@@@@@@@@@@@@@@@@@@&&&&####BGP7.
+                  ~P&&&&&&@@@@@@@@@@@@@@@@@@@@&&&&#GPY?77!~.
+                :Y#&&&&&&@@@@@@@@@@@@@@@@@@@@@&#57^..
+               ^5##&&&#GPYJ??J5G##&@@@@@@@@&&B?^:.      .:.
+              ^YBBGP?^..       .:^!7?G&&@@@&B~.      .~YPGP5?~.
+             :7GY^.       ....     :75#&@@@@&BJ^   :?G#&&&&&&BP!
+            .!5?    ^?JY5PP5YY?~:   ~5#&@@@@@@P:  .G#BGPP555GBBG!
+            .??.  ^G&&&&@@@@&&&#GY!.   7&@@@@@?~^^~7?J7~~~~~~^?G5.
+            :7^..7#&&&@@&##BBBBBBB#G!. .P&@@@@BGG^~~.        :.!Y^
+            ^!..7B&&&&B?~7JJ7!~!7!~^^!!YB&@@@@@#G7:........:.:^.. .
+            :^..7P#&&?.^^.       .:. JB###&@@@@@&&&&&&#BBGBBGBBBG5?:
+            .::.!5B&? :      .^!JYJY#&&&#BB&@@@@@&&@@@@@@@@&&&&#BBG57.
+             :!::~!^ ^?7?JYPBBBB#&@@@&&&#BG#@@@@@@&&&@@@@@&&&&#BGPPYY7
+             :5G?~:~J5GBB#&&&@@@@@@@@@&&&#BB&@@@@@@&&&&&@&&&&&&#GP5YJ?.
+             .Y?!G&@@@@@@@@&&@@@@@@@@&&&&#BG&&@@@&&BB&&#JYPGGGGGG5Y?!:
+             .J7P&&&&&&&&&&&&&@@@@&B#&&@@#J~?YYYJ7^:^~:^!!^.....::..  !.
+              !~G&&&&&&&&&&&&&&&#?..JBPYJ!.           .:B&&#GY7~.    :5
+              . ?B#&&&&&&&&&&#P~..?G~^.   .          ?#&&&&&&&&&5    :~
+                 ~YPB###BBPY!. ^5&&&#55GB&J           ^P###BBGGP:    ^.
+                ..  .^^^:.  :7G&&&&&&&&@&J     :GP~               ..:~
+                 ?Y.       .J#&&&&&&&#BY.     ^&@&&B7           .^^.7.
+                  ?J          :7YJ!^.         ~!^:......^!7JYPP5?: ~!
+                   ^^.   ^~.              ..^~!7JYPGBB#####BP?^.  :?:
+                    .!?~.  ^7!^^~!!7?Y5PGB##&&&&&#BBGPJ!~:..  .: .?~
+                      :J57.  .:!?YJJ?JJYYYYJ?!~^..     :^~!!!77. 77
+                        :J57.             ...        ~PGGGGP5Y~ ~7.
+                          :?5J^    .~7JJYY5PPPP~     ~BBBGGPY7.^?:
+                            .!YY7:   ^7JY5PPGBBY      :GBGP5J^~J:
+                               :7YY7:.:!?Y5PPGGY       ^GGPY?!Y^
+                                  :7YY7~!?Y5PPPP^       5PYJ77^
+                                    .^?YJ77JYY55Y.      JYJ7~:
+                                       .^~~!7?JJY?      7?!^.
+                                           .:^~!!!~     :^.
+                                                    ...
+
+
+
  ${AnsiColor.BRIGHT_RED}
    _  _   ____    ____  _______..______            .___  ___. .______      ________
  _| || |_ \   \  /   / /       ||   _  \           |   \/   | |   _  \    |       /
@@ -6,4 +96,4 @@
 |_  __  _|    |  | .----)   |   |  |\  \----.      |  |  |  | |  |\  \----. /  /----.
   |_||_|      |__| |_______/    | _| `._____| _____|__|  |__| | _| `._____|/________|
                                              |______|
-${AnsiColor.YELLOW}Powered by Spring Boot ${spring-boot.version}
+${AnsiColor.BRIGHT_YELLOW}Powered by Spring Boot ${spring-boot.version}

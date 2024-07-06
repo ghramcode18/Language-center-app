@@ -82,6 +82,8 @@ public class PostService {
             try {
                 post.get().setTitle(postRequest.getTitle());
                 post.get().setContent(postRequest.getContent());
+                post.get().setType(postRequest.getType());
+                post.get().setCreatedAt(LocalDateTime.now());
                 String imageUrl = FilesManagement.uploadSingleFile(postRequest.getCover());
                 if (imageUrl != null) {
                     CourseImageEntity imageEntity = new CourseImageEntity();
