@@ -1,4 +1,4 @@
-FROM maven:3.8.5-openjdk-17 As build
+FROM maven:3.8.5-openjdk-17
 # Set the working directory
 WORKDIR /app
 COPY . . 
@@ -8,7 +8,7 @@ FROM openjdk:17.0.1-jdk-slim
 
 
 # Copy the JAR file to the container
-COPY --FROM = build target/language-center-app-0.0.1-SNAPSHOT.jar app.jar
+COPY  target/language-center-app-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the port your Spring Boot app runs on
 EXPOSE 8080
