@@ -1,15 +1,8 @@
-FROM ubuntu:latest AS build
-
-RUN apt-get update
-# Stage 1: Build the application
 FROM maven:3.8.5-openjdk-17 AS build
-WORKDIR /usr/share/app
 COPY . .
-RUN mvn clean package
-
+RUN mvn clean package -DskipTests
 
 FROM openjdk:17.0.1-jdk-slim
-WORKDIR /usr/share/app
-COPY target/*.jar app.jar
+COPY --from=build /target/language-center-app-0.0.1-SNAPSHOT.jar demo.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java","-jar","demo.jar"]
