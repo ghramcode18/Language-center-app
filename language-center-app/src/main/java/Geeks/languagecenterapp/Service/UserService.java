@@ -331,4 +331,54 @@ public class UserService {
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
     }
+
+    public Register_Login_Response addTeacher(RegisterRequest registerRequest) {
+        if (userRepository.findByEmail(registerRequest.getEmail()).isPresent() || userRepository.findByPhoneNumber(registerRequest.getPhone()).isPresent()) {
+            throw new CustomException("Phone or Email Already Used", 409);
+        } else {
+            // Create New User
+            UserEntity user = new UserEntity();
+            user.setFirstName(registerRequest.getFirstName());
+            user.setLastName(registerRequest.getLastName());
+            user.setEmail(registerRequest.getEmail());
+            user.setPassword(encryptionService.encryptPassword(registerRequest.getPassword()));
+            user.setDob(registerRequest.getDob());
+            user.setAccountType(UserAccountEnum.TEACHER);
+            user.setGender(registerRequest.getGender());
+            user.setPhoneNumber(registerRequest.getPhone());
+            // Save User In DataBase
+            UserEntity savedUser = userRepository.save(user);
+            // Generate Token For User
+            String generatedToken = jwtService.generateJWT(user);
+            // Save Token In DataBase
+            tokenService.saveUserToken(savedUser, generatedToken);
+            // Initialize And return Response
+            return initializeResponseObject(user, generatedToken);
+        }
+    }
+    public Register_Login_Response addSecretary(RegisterRequest registerRequest) {
+        if (userRepository.findByEmail(registerRequest.getEmail()).isPresent() || userRepository.findByPhoneNumber(registerRequest.getPhone()).isPresent()) {
+            throw new CustomException("Phone or Email Already Used", 409);
+        } else {
+            // Create New User
+            UserEntity user = new UserEntity();
+            user.setFirstName(registerRequest.getFirstName());
+            user.setLastName(registerRequest.getLastName());
+            user.setEmail(registerRequest.getEmail());
+            user.setPassword(encryptionService.encryptPassword(registerRequest.getPassword()));
+            user.setDob(registerRequest.getDob());
+            user.setAccountType(UserAccountEnum.SECRETARY);
+            user.setGender(registerRequest.getGender());
+            user.setPhoneNumber(registerRequest.getPhone());
+            // Save User In DataBase
+            UserEntity savedUser = userRepository.save(user);
+            // Generate Token For User
+            String generatedToken = jwtService.generateJWT(user);
+            // Save Token In DataBase
+            tokenService.saveUserToken(savedUser, generatedToken);
+            // Initialize And return Response
+            return initializeResponseObject(user, generatedToken);
+        }
+    }
+
 }

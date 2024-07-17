@@ -25,4 +25,7 @@ public class ServiceEntity {
     private List<CourseEntity> courses;
 
 
+    @OneToMany(mappedBy = "service", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<CourseImageEntity> ImageList ;
+
 }

@@ -6,10 +6,13 @@ import Geeks.languagecenterapp.DTO.Response.CourseResponse;
 import Geeks.languagecenterapp.DTO.Response.ServiceWithCourseResponse;
 import Geeks.languagecenterapp.Model.CourseDayEntity;
 import Geeks.languagecenterapp.Model.CourseEntity;
+import Geeks.languagecenterapp.Model.CourseImageEntity;
+import Geeks.languagecenterapp.Model.Enum.PostImageEnum;
 import Geeks.languagecenterapp.Model.ServiceEntity;
 import Geeks.languagecenterapp.Repository.CourseImageRepository;
 import Geeks.languagecenterapp.Repository.CourseRepository;
 import Geeks.languagecenterapp.Repository.ServiceRepository;
+import Geeks.languagecenterapp.Tools.FilesManagement;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,7 +41,17 @@ public class ServiceService {
         try {
             ServiceEntity service = new ServiceEntity();
             service.setName(serviceRequest.getName());
+            String imageUrl = FilesManagement.uploadSingleFile(serviceRequest.getCover());
             serviceRepository.save(service);
+            if (imageUrl != null) {
+                CourseImageEntity imageEntity = new CourseImageEntity();
+                // initialize Image Object
+                imageEntity.setImgUrl(imageUrl);
+                imageEntity.setService(service);
+                imageEntity.setImageType(PostImageEnum.Service_Img);
+                courseImageRepository.save(imageEntity);
+            }
+
 
             // Create a response object with the success message
             response.put("message", "Service added successfully.");
@@ -59,6 +72,16 @@ public class ServiceService {
             try {
                 service.get().setName(serviceRequest.getName());
                 serviceRepository.save(service.get());
+                String imageUrl = FilesManagement.uploadSingleFile(serviceRequest.getCover());
+                if (imageUrl != null) {
+                    Optional<CourseImageEntity> imageEntity = courseImageRepository.findByServiceId(service.get().getId());
+                    // initialize Image Object
+                    imageEntity.get().setImgUrl(imageUrl);
+                    imageEntity.get().setService(service.get());
+                    imageEntity.get().setImageType(PostImageEnum.Service_Img);
+                    courseImageRepository.save(imageEntity.get());
+                }
+
 
                 // Create a response object with the success message
                 response.put("message", "Service updated successfully.");
@@ -122,6 +145,7 @@ public class ServiceService {
         return new ServiceWithCourseResponse(
                 serviceEntity.getId(), // serviceId first
                 serviceEntity.getName(),
+                serviceEntity.getImageList(),
                 courseResponses
         );
     }
