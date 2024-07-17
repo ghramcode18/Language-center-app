@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: language-center-app
+    env: java
+    plan: free
+    buildCommand: "./mvnw clean install"
+    startCommand: "java -jar /usr/share/app/app.jar"
+    envVars:
+      - key: DATABASE_URL
+        value: "jdbc:postgresql://localhost:2345/lca?createDatabaseIfNotExist=true"
+      - key: DATABASE_USERNAME
+        value: "test"
+      - key: DATABASE_PASSWORD
+        value: "test"
+    envSpecific:
+      production:
+        plan: starter
