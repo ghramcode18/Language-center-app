@@ -1,9 +1,7 @@
 # Stage 1: Build the application
 FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /usr/share/app
-COPY ./pom.xml .
-RUN mvn dependency:go-offline -B  # Download dependencies
-COPY src ./src
+COPY . .
 RUN mvn clean install -e -X  # Enable debug output
 
 # Stage 2: Run the application
