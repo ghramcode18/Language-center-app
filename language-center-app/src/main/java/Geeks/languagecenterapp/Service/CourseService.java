@@ -186,7 +186,23 @@ public class CourseService {
         List<CourseEntity> courses = courseRepository.findAll();
         return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
+    // Get all recent courses
+    public List<CourseResponse> getAllRecent() {
+        List<CourseEntity> courses = courseRepository.findByOrderByStartDateDesc();
+        return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
 
+    // Get all discounted courses
+    public List<CourseResponse> getAllDiscount() {
+        List<CourseEntity> courses = courseRepository.findByDiscountGreaterThan(0);
+        return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    // Get all top-rating courses
+    public List<CourseResponse> getAllTopRating() {
+        List<CourseEntity> courses = courseRepository.findTopRatedCourses();
+        return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
     // Convert CourseEntity to CourseDTO
     private CourseResponse convertToDTO(CourseEntity course) {
         CourseResponse dto = new CourseResponse();

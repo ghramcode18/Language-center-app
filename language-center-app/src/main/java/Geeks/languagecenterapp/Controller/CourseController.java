@@ -94,6 +94,24 @@ public class CourseController {
         List<CourseResponse> courses = courseService.getAll();
         return ResponseEntity.ok(courses);
     }
+    //get All Recent Courses
+    @GetMapping("/get/all-recent")
+    public ResponseEntity<List<CourseResponse>> getAllRecentCourses() {
+        List<CourseResponse> courses = courseService.getAllRecent();
+        return ResponseEntity.ok(courses);
+    }
+    //get All Discount Courses
+    @GetMapping("/get/all-discount")
+    public ResponseEntity<List<CourseResponse>> getAllDiscountCourses() {
+        List<CourseResponse> courses = courseService.getAllDiscount();
+        return ResponseEntity.ok(courses);
+    }
+    //get All Top Rating Courses
+    @GetMapping("/get/all-top-rating")
+    public ResponseEntity<List<CourseResponse>> getAllTopRatingCourses() {
+        List<CourseResponse> courses = courseService.getAllTopRating();
+        return ResponseEntity.ok(courses);
+    }
     // Add Course to Favorite
     @PostMapping("/add-to-favorite/{id}")
     public ResponseEntity<Object> addCourseToFavorite(@PathVariable("id") int id, @AuthenticationPrincipal UserEntity user) {
