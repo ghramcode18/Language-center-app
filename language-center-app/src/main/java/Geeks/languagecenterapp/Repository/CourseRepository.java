@@ -17,6 +17,9 @@ public interface CourseRepository extends JpaRepository<CourseEntity,Integer> {
     List<CourseEntity> findByDiscountGreaterThan(int i);
 
     // Custom query to get top-rated courses
-    @Query("SELECT c FROM CourseEntity c JOIN EnrollCourseEntity e GROUP BY c.id ORDER BY AVG(e.rate) DESC")
+    @Query("SELECT c FROM CourseEntity c JOIN c.enrolledCourseList e GROUP BY c.id ORDER BY AVG(e.rate) DESC")
     List<CourseEntity> findTopRatedCourses();
+
+    @Query("SELECT AVG(e.rate) FROM EnrollCourseEntity e WHERE e.course.id = :courseId")
+    float findAverageRatingByCourseId(int courseId);
 }

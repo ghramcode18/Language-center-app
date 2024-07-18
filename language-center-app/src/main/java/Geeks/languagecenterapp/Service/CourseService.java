@@ -221,6 +221,7 @@ public class CourseService {
         dto.setProgress(course.getProgress());
         dto.setLevel(course.getLevel());
         dto.setDiscount(course.getDiscount());
+        dto.setRating(courseRepository.findAverageRatingByCourseId(course.getId()));
         dto.setImage(courseImageRepository.findByCourseId(course.getId()));
         List<CourseDayResponse> courseDayDTOs = course.getCourseDayList().stream().map(this::convertToCourseDayDTO).collect(Collectors.toList());
         dto.setCourseDayList(courseDayDTOs);

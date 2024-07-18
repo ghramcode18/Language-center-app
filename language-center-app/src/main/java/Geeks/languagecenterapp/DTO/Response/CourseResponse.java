@@ -24,6 +24,7 @@ public class CourseResponse {
     private double progress;
     private String level;
     private int discount;
+    private float rating;
     private List<CourseDayResponse> courseDayList;
     private CourseImageEntity image;
 }
