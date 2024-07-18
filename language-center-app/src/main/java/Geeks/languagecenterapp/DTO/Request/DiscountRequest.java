@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class AttendanceRequest {
-    private int std_id;
-    private String date;
+public class DiscountRequest {
+    private int discount;
 }

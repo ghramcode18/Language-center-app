@@ -49,6 +49,8 @@ public class CourseEntity {
 
     private boolean isActive;
 
+    private int discount;
+
     private String  level;
 
 

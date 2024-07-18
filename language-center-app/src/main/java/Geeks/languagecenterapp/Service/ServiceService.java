@@ -155,13 +155,18 @@ public class ServiceService {
         dto.setId(courseEntity.getId());
         dto.setTitle(courseEntity.getTitle());
         dto.setDescription(courseEntity.getDescription());
-        dto.setPrice(courseEntity.getPrice());
+        double newPrice=0;
+        double price=courseEntity.getPrice();
+        int discount=courseEntity.getDiscount();
+        newPrice=price-((price*discount)/100);
+        dto.setPrice(newPrice);
         dto.setNumOfHours(courseEntity.getNumOfHours());
         dto.setNumOfSessions(courseEntity.getNumOfSessions());
         dto.setNumOfRoom(courseEntity.getNumOfRoom());
         dto.setStartDate(courseEntity.getStartDate());
         dto.setProgress(courseEntity.getProgress());
         dto.setLevel(courseEntity.getLevel());
+        dto.setDiscount(courseEntity.getDiscount());
         dto.setImage(courseImageRepository.findByCourseId(courseEntity.getId()));
         List<CourseDayResponse> courseDayDTOs = courseEntity.getCourseDayList().stream()
                 .map(this::mapToCourseDayDTO)

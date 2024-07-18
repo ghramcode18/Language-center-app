@@ -1,9 +1,6 @@
 package Geeks.languagecenterapp.Controller;
 
-import Geeks.languagecenterapp.DTO.Request.AttendanceRequest;
-import Geeks.languagecenterapp.DTO.Request.CourseRequest;
-import Geeks.languagecenterapp.DTO.Request.DayCourseRequest;
-import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
+import Geeks.languagecenterapp.DTO.Request.*;
 import Geeks.languagecenterapp.DTO.Response.CourseResponse;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Model.UserEntity;
@@ -35,6 +32,7 @@ public class CourseController {
         }
         return courseService.add(body);
     }
+
     //update Course
     @PostMapping("/update/{id}")
     public ResponseEntity<Object>updateCourse(@AuthenticationPrincipal UserEntity user ,@PathVariable("id") int id , @ModelAttribute CourseRequest body)throws JsonProcessingException{
@@ -146,6 +144,15 @@ public class CourseController {
         }
         return courseService.manualAttendance(body,id);
     }
-
+    @PostMapping("/add/discount/{id}")
+    public ResponseEntity<?> addCourseDiscount(@PathVariable("id") int id , @ModelAttribute DiscountRequest body ,@AuthenticationPrincipal UserEntity user){
+        Map<String, String> response = new HashMap<>();
+        if (user.getAccountType()!= UserAccountEnum.ADMIN){
+            // Create a response object with the success message
+            response.put("message","You are UnAuthorized");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+        return courseService.addDiscount(body,id);
+    }
 
 }

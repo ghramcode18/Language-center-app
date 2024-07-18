@@ -23,6 +23,7 @@ public class CourseResponse {
     private LocalDateTime startDate;
     private double progress;
     private String level;
+    private int discount;
     private List<CourseDayResponse> courseDayList;
     private CourseImageEntity image;
 }
