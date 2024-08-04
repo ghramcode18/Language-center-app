@@ -109,8 +109,6 @@ public class CourseController {
     public ResponseEntity<?> getStudentMarks(@ModelAttribute GetStudentMarksRequest body) {
         return courseService.getUserMarks(body);
     }
-    
-
 
 
 }
