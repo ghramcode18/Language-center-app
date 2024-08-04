@@ -27,6 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -73,7 +74,25 @@ public class UserService {
             user.setEmail(registerRequest.getEmail());
             user.setBio(registerRequest.getBio());
             user.setDob(registerRequest.getDob());
-            user.setAccountType(UserAccountEnum.USER);
+            switch (registerRequest.getUserType()) {
+                case USER:
+                    user.setAccountType(UserAccountEnum.USER);
+                    break;
+                case TEACHER:
+                    user.setAccountType(UserAccountEnum.TEACHER);
+                    break;
+                case ADMIN:
+                    user.setAccountType(UserAccountEnum.ADMIN);
+                    break;
+                case SECRETARY:
+                    user.setAccountType(UserAccountEnum.SECRETARY);
+                    break;
+                case GUEST:
+                    user.setAccountType(UserAccountEnum.GUEST);
+                    break;
+                default:
+                    throw new CustomException("Wrong User Type", 400);
+            }
             user.setGender(registerRequest.getGender());
             user.setEducation(registerRequest.getEducation());
             user.setPhoneNumber(registerRequest.getPhone());
@@ -181,14 +200,14 @@ public class UserService {
 
     //Enroll in a course
     public ResponseEntity<Object> enroll(EnrollRequest RequestBody, int id) {
-        Map <String,String> response = new HashMap<>();
+        Map<String, String> response = new HashMap<>();
 
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<UserEntity> student = userRepository.findById(RequestBody.getStd_id());
         // Check if the placement test exists
         if (!course.isPresent()) {
             // Create a response object with the success message
-            response.put("message","Course Not Found.");
+            response.put("message", "Course Not Found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
@@ -196,7 +215,7 @@ public class UserService {
         Optional<EnrollCourseEntity> existingBooking = enrollCourseRepository.findByUserIdAndCourseId(student.get().getId(), course.get().getId());
         if (existingBooking.isPresent()) {
             // Create a response object with the success message
-            response.put("message","Enroll Course Already Exists.");
+            response.put("message", "Enroll Course Already Exists.");
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
 
@@ -208,60 +227,59 @@ public class UserService {
         enrollCourseRepository.save(enrollCourse);
 
         // Create a response object with the success message
-        response.put("message","Enroll Successfully.");
+        response.put("message", "Enroll Successfully.");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     //rate course
-    public ResponseEntity<Object> rateCourse(RateRequest body, int id)  {
-        Map <String,String> response = new HashMap<>();
+    public ResponseEntity<Object> rateCourse(RateRequest body, int id) {
+        Map<String, String> response = new HashMap<>();
         Optional<CourseEntity> course = courseRepository.findById(id);
         Optional<UserEntity> student = userRepository.findById(body.getStd_id());
         // Check if the placement test exists
         if (!course.isPresent()) {
             // Create a response object with the success message
-            response.put("message","Course Not Found.");
+            response.put("message", "Course Not Found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
         // Check if the booking already exists for this student and course
         Optional<EnrollCourseEntity> existingBooking = enrollCourseRepository.findByUserIdAndCourseId(student.get().getId(), course.get().getId());
-        if (existingBooking.isPresent() && student.get().getAccountType()==UserAccountEnum.USER) {
+        if (existingBooking.isPresent() && student.get().getAccountType() == UserAccountEnum.USER) {
             existingBooking.get().setRate(body.getRate());
             enrollCourseRepository.save(existingBooking.get());
             // Create a response object with the success message
-            response.put("message","Rate added successfully :)");
+            response.put("message", "Rate added successfully :)");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         // Create a response object with the success message
-        response.put("message","Something went wrong.");
+        response.put("message", "Something went wrong.");
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     //rate teacher
     public ResponseEntity<Object> rateTeacher(RateRequest body, int id) throws JsonProcessingException {
-        Map <String,String> response = new HashMap<>();
+        Map<String, String> response = new HashMap<>();
         Optional<UserEntity> teacher = userRepository.findById(id);
-        if (!teacher.isPresent() ) {
+        if (!teacher.isPresent()) {
             // Create a response object with the success message
-            response.put("message","Teacher Not Found.");
+            response.put("message", "Teacher Not Found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
-        Optional<UserRateEntity>  teacherRate = userRateRepository.findById(teacher.get().getId());
-        if (teacherRate.isPresent() && teacher.get().getAccountType()==UserAccountEnum.TEACHER) {
+        Optional<UserRateEntity> teacherRate = userRateRepository.findById(teacher.get().getId());
+        if (teacherRate.isPresent() && teacher.get().getAccountType() == UserAccountEnum.TEACHER) {
             teacherRate.get().setUser(teacher.get());
             teacherRate.get().setDate(LocalDateTime.now());
-            teacherRate.get().setCountRate(teacherRate.get().getCountRate()+1);
+            teacherRate.get().setCountRate(teacherRate.get().getCountRate() + 1);
             teacherRate.get().setCountSum(teacherRate.get().getCountSum() + body.getRate());
             userRateRepository.save(teacherRate.get());
 
             // Create a response object with the success message
-            response.put("message","Rate added successfully :)");
+            response.put("message", "Rate added successfully :)");
             return new ResponseEntity<>(response, HttpStatus.CREATED);
-        }
-        else {//first Rate
-            if(teacher.get().getAccountType()==UserAccountEnum.TEACHER) {
+        } else {//first Rate
+            if (teacher.get().getAccountType() == UserAccountEnum.TEACHER) {
                 UserRateEntity newRate = new UserRateEntity();
                 newRate.setUser(teacher.get());
                 newRate.setDate(LocalDateTime.now());
@@ -270,34 +288,34 @@ public class UserService {
                 userRateRepository.save(newRate);
 
                 // Create a response object with the success message
-                response.put("message","Rate added successfully :)");
+                response.put("message", "Rate added successfully :)");
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             }
         }
         // Create a response object with the success message
-        response.put("message","Something went wrong.");
+        response.put("message", "Something went wrong.");
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public ResponseEntity<Object> getTeacherRate(int id) throws JsonProcessingException {
-        Map <String,String> response = new HashMap<>();
-           Optional<UserEntity> teacher = userRepository.findById(id);
-           Optional<UserRateEntity> teacherRate = userRateRepository.findByUser(teacher.get());
-           if (teacherRate.isPresent() && teacher.get().getAccountType()==UserAccountEnum.TEACHER) {
+        Map<String, String> response = new HashMap<>();
+        Optional<UserEntity> teacher = userRepository.findById(id);
+        Optional<UserRateEntity> teacherRate = userRateRepository.findByUser(teacher.get());
+        if (teacherRate.isPresent() && teacher.get().getAccountType() == UserAccountEnum.TEACHER) {
 
-                  // Calculate average rate
-                  float averageRate = teacherRate.get().getCountSum()/(float)teacherRate.get().getCountRate();
+            // Calculate average rate
+            float averageRate = teacherRate.get().getCountSum() / (float) teacherRate.get().getCountRate();
 
-                  // Build response
-                  ObjectMapper objectMapper = new ObjectMapper();
-                  String jsonResponse = objectMapper.writeValueAsString(averageRate);
-                  response.put("Rate",jsonResponse);
-                  return new ResponseEntity<>(response, HttpStatus.OK);
-              } else {
-               // Create a response object with the success message
-               response.put("message","Teacher Not Found.");
-               return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-              }
+            // Build response
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(averageRate);
+            response.put("Rate", jsonResponse);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            // Create a response object with the success message
+            response.put("message", "Teacher Not Found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
     }
 
     public ResponseEntity<?> uploadCertificates(List<MultipartFile> files) {
@@ -330,55 +348,6 @@ public class UserService {
         } else {
             response.put("message", "Only Teachers And Admins Can Upload Certificates");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-        }
-    }
-
-    public Register_Login_Response addTeacher(RegisterRequest registerRequest) {
-        if (userRepository.findByEmail(registerRequest.getEmail()).isPresent() || userRepository.findByPhoneNumber(registerRequest.getPhone()).isPresent()) {
-            throw new CustomException("Phone or Email Already Used", 409);
-        } else {
-            // Create New User
-            UserEntity user = new UserEntity();
-            user.setFirstName(registerRequest.getFirstName());
-            user.setLastName(registerRequest.getLastName());
-            user.setEmail(registerRequest.getEmail());
-            user.setPassword(encryptionService.encryptPassword(registerRequest.getPassword()));
-            user.setDob(registerRequest.getDob());
-            user.setAccountType(UserAccountEnum.TEACHER);
-            user.setGender(registerRequest.getGender());
-            user.setPhoneNumber(registerRequest.getPhone());
-            // Save User In DataBase
-            UserEntity savedUser = userRepository.save(user);
-            // Generate Token For User
-            String generatedToken = jwtService.generateJWT(user);
-            // Save Token In DataBase
-            tokenService.saveUserToken(savedUser, generatedToken);
-            // Initialize And return Response
-            return initializeResponseObject(user, generatedToken);
-        }
-    }
-    public Register_Login_Response addSecretary(RegisterRequest registerRequest) {
-        if (userRepository.findByEmail(registerRequest.getEmail()).isPresent() || userRepository.findByPhoneNumber(registerRequest.getPhone()).isPresent()) {
-            throw new CustomException("Phone or Email Already Used", 409);
-        } else {
-            // Create New User
-            UserEntity user = new UserEntity();
-            user.setFirstName(registerRequest.getFirstName());
-            user.setLastName(registerRequest.getLastName());
-            user.setEmail(registerRequest.getEmail());
-            user.setPassword(encryptionService.encryptPassword(registerRequest.getPassword()));
-            user.setDob(registerRequest.getDob());
-            user.setAccountType(UserAccountEnum.SECRETARY);
-            user.setGender(registerRequest.getGender());
-            user.setPhoneNumber(registerRequest.getPhone());
-            // Save User In DataBase
-            UserEntity savedUser = userRepository.save(user);
-            // Generate Token For User
-            String generatedToken = jwtService.generateJWT(user);
-            // Save Token In DataBase
-            tokenService.saveUserToken(savedUser, generatedToken);
-            // Initialize And return Response
-            return initializeResponseObject(user, generatedToken);
         }
     }
 

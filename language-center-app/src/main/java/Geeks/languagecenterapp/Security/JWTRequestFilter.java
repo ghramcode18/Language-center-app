@@ -44,7 +44,7 @@ public class JWTRequestFilter extends OncePerRequestFilter {
                 if (userEmail != null) {
                     Optional<UserEntity> currentUser = userRepository.findByEmail(userEmail);
                     var validToken = tokenRepository.findByToken(token);
-                    if (currentUser.isPresent() && validToken.isPresent() && !jwtService.isTokenExpired(token)) {
+                    if (currentUser.isPresent() && validToken.isPresent()) { // Based On Ghinwa Need  // && !jwtService.isTokenExpired(token)
                         UserEntity user = currentUser.get();
                         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
                         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

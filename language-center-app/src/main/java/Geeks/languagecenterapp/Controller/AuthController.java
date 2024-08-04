@@ -38,35 +38,6 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/add/teacher")
-    public ResponseEntity<?> addTeacher(@AuthenticationPrincipal UserEntity user, @ModelAttribute RegisterRequest registerRequest) {
-        Map<String, String> response = new HashMap<>();
-        if (user.getAccountType()!= UserAccountEnum.ADMIN){
-            // Create a response object with the success message
-            response.put("message","You are UnAuthorized");
-            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-        }
-        try {
-            return new ResponseEntity<>(userService.addTeacher(registerRequest), HttpStatus.CREATED);
-        } catch (CustomException ex) {
-            return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBody());
-        }
-    }
-    @PostMapping("/add/secretary")
-    public ResponseEntity<?> addSecretary(@AuthenticationPrincipal UserEntity user, @ModelAttribute RegisterRequest registerRequest) {
-        Map<String, String> response = new HashMap<>();
-        if (user.getAccountType()!= UserAccountEnum.ADMIN){
-            // Create a response object with the success message
-            response.put("message","You are UnAuthorized");
-            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-        }
-        try {
-            return new ResponseEntity<>(userService.addSecretary(registerRequest), HttpStatus.CREATED);
-        } catch (CustomException ex) {
-            return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBody());
-        }
-    }
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @ModelAttribute LoginRequest loginRequest) {
         try {

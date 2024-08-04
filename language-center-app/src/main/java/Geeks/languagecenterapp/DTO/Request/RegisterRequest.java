@@ -1,6 +1,7 @@
 package Geeks.languagecenterapp.DTO.Request;
 
 import Geeks.languagecenterapp.Model.Enum.GenderEnum;
+import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -42,4 +43,5 @@ public class RegisterRequest {
 
     private MultipartFile image;
 
+    private UserAccountEnum userType ;
 }

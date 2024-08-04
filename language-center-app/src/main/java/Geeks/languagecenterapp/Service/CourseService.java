@@ -490,7 +490,7 @@ public class CourseService {
                     List<String[]> result = MarkService.searchInExcelFile(markFile, data.getPhone());
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<>("Course With this Id Not Found", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>("Course With this Id Not Found Or Mark File Not Uploaded Yet", HttpStatus.BAD_REQUEST);
                 }
             } else {
                 return new ResponseEntity<>("Student With this Phone Not Found", HttpStatus.BAD_REQUEST);
