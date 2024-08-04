@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class ScheduleResponse {
+    private int id;
     private String language;
 
     private int maxNum;

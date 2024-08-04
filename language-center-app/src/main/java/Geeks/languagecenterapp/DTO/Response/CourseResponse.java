@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class CourseResponse {
+    private int id;
     private String title;
     private String description;
     private double price;
@@ -22,6 +23,8 @@ public class CourseResponse {
     private LocalDateTime startDate;
     private double progress;
     private String level;
+    private int discount;
+    private float rating;
     private List<CourseDayResponse> courseDayList;
     private CourseImageEntity image;
 }

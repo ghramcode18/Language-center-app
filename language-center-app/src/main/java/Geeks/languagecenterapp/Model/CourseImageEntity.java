@@ -28,6 +28,11 @@ public class CourseImageEntity {
     @JoinColumn(name = "postId", nullable = true)
     private PostEntity post;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "serviceId", nullable = true)
+    private ServiceEntity service;
+
     private String imgUrl;
 
     private PostImageEnum imageType;

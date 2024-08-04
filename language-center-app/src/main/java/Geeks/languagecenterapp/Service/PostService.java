@@ -82,6 +82,8 @@ public class PostService {
             try {
                 post.get().setTitle(postRequest.getTitle());
                 post.get().setContent(postRequest.getContent());
+                post.get().setType(postRequest.getType());
+                post.get().setCreatedAt(LocalDateTime.now());
                 String imageUrl = FilesManagement.uploadSingleFile(postRequest.getCover());
                 if (imageUrl != null) {
                     CourseImageEntity imageEntity = new CourseImageEntity();
@@ -151,6 +153,7 @@ public class PostService {
     // Convert CourseEntity to CourseDTO
     private PostResponse convertToDTO(PostEntity post) {
         PostResponse dto = new PostResponse();
+        dto.setPostId(post.getId());
         dto.setTitle(post.getTitle());
         dto.setContent(post.getContent());
         dto.setType(post.getType());

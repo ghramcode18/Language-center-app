@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class AttendanceRequest {
     private int std_id;
-    private String qr;
+    private String date;
 }

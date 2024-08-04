@@ -190,19 +190,42 @@ public class CourseService {
         List<CourseEntity> courses = courseRepository.findAll();
         return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
+    // Get all recent courses
+    public List<CourseResponse> getAllRecent() {
+        List<CourseEntity> courses = courseRepository.findByOrderByStartDateDesc();
+        return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
 
+    // Get all discounted courses
+    public List<CourseResponse> getAllDiscount() {
+        List<CourseEntity> courses = courseRepository.findByDiscountGreaterThan(0);
+        return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    // Get all top-rating courses
+    public List<CourseResponse> getAllTopRating() {
+        List<CourseEntity> courses = courseRepository.findTopRatedCourses();
+        return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
     // Convert CourseEntity to CourseDTO
     private CourseResponse convertToDTO(CourseEntity course) {
         CourseResponse dto = new CourseResponse();
+        dto.setId(course.getId());
         dto.setTitle(course.getTitle());
         dto.setDescription(course.getDescription());
-        dto.setPrice(course.getPrice());
+        double newPrice=0;
+        double price=course.getPrice();
+        int discount=course.getDiscount();
+        newPrice=price-((price*discount)/100);
+        dto.setPrice(newPrice);
         dto.setNumOfHours(course.getNumOfHours());
         dto.setNumOfSessions(course.getNumOfSessions());
         dto.setNumOfRoom(course.getNumOfRoom());
         dto.setStartDate(course.getStartDate());
         dto.setProgress(course.getProgress());
         dto.setLevel(course.getLevel());
+        dto.setDiscount(course.getDiscount());
+        dto.setRating(courseRepository.findAverageRatingByCourseId(course.getId()));
         dto.setImage(courseImageRepository.findByCourseId(course.getId()));
         List<CourseDayResponse> courseDayDTOs = course.getCourseDayList().stream().map(this::convertToCourseDayDTO).collect(Collectors.toList());
         dto.setCourseDayList(courseDayDTOs);
@@ -304,7 +327,7 @@ public class CourseService {
             AttendanceEntity attendance = new AttendanceEntity();
             attendance.setCourse(course.get());
             attendance.setUser(student.get());
-            attendance.setQr(body.getQr());
+            attendance.setQr(body.getDate());
             attendance.setPresent(true);
             attendance.setAttDate(LocalDateTime.now());
             attendanceRepository.save(attendance);
@@ -477,4 +500,23 @@ public class CourseService {
         }
     }
 
+    public ResponseEntity<?> addDiscount(DiscountRequest body ,int id) {
+        Map <String,String> response = new HashMap<>();
+
+        Optional<CourseEntity> course = courseRepository.findById(id);
+        if (course.isPresent()) {
+            course.get().setDiscount(body.getDiscount());
+            courseRepository.save(course.get());
+
+            // Create a response object with the success message
+            response.put("message","Discount added to the course successfully.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        else {
+            // Create a response object with the success message
+            response.put("message","Course Not Found.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+    }
 }

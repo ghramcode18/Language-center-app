@@ -13,6 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class PostResponse {
+    private int postId;
+
     private String title;
 
     private String content;
