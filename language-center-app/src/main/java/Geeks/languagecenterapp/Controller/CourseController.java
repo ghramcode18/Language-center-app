@@ -173,4 +173,15 @@ public class CourseController {
         return courseService.addDiscount(body,id);
     }
 
+    @PostMapping("/uploadMarks")
+    public ResponseEntity<?> uploadMarksFile(@ModelAttribute UploadMarksRequset body) {
+        return new ResponseEntity<>(courseService.uploadMarksFile(body), HttpStatus.OK);
+    }
+
+    @GetMapping("/showStudentMarks")
+    public ResponseEntity<?> getStudentMarks(@ModelAttribute GetStudentMarksRequest body) {
+        return courseService.getUserMarks(body);
+    }
+
+
 }
