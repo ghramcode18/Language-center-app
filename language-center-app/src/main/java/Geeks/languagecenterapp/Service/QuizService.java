@@ -346,4 +346,8 @@ public class QuizService {
         response.put("message","Quiz taken Successfully.");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+    public List<QuestionEntity> getAllQuestions() {
+       return questionRepository.findAll();
+    }
 }

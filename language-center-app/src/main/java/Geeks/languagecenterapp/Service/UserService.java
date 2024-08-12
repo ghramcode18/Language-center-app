@@ -184,6 +184,8 @@ public class UserService {
         List<CourseEntity> courses = new ArrayList<>();
         for (EnrollCourseEntity enrollment : enrollments) {
             courses.add(enrollment.getCourse());
+            System.out.println(enrollment.getCourse());
+
         }
         return courses;
     }

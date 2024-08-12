@@ -1,10 +1,8 @@
 package Geeks.languagecenterapp.Controller;
-import Geeks.languagecenterapp.DTO.Request.BookRequest;
-import Geeks.languagecenterapp.DTO.Request.QuestionQuizRequest;
-import Geeks.languagecenterapp.DTO.Request.QuestionRequest;
-import Geeks.languagecenterapp.DTO.Request.QuizRequest;
+import Geeks.languagecenterapp.DTO.Request.*;
 import Geeks.languagecenterapp.DTO.Response.QuizResponse;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
+import Geeks.languagecenterapp.Model.QuestionEntity;
 import Geeks.languagecenterapp.Model.UserEntity;
 import Geeks.languagecenterapp.Service.QuizService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -122,6 +120,19 @@ public class QuizController {
         }
         return quizService.deleteQuestionFromQuiz(body,id);
     }
+    // Get All Questions
+    @GetMapping("/get-all-questions")
+    public ResponseEntity<?> getAllQuestions(@AuthenticationPrincipal UserEntity user)throws JsonProcessingException  {
+        Map<String, String> response = new HashMap<>();
+        if (user.getAccountType()!= UserAccountEnum.ADMIN){
+            // Create a response object with the success message
+            response.put("message","You are UnAuthorized");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+        List<QuestionEntity> questions = quizService.getAllQuestions();
+        return ResponseEntity.ok(questions);
+    }
+
     // Get All Quizzes with Questions
     @GetMapping("/get-all-with-questions")
     public ResponseEntity<List<QuizResponse>> getAllQuizzesWithQuestions() {
