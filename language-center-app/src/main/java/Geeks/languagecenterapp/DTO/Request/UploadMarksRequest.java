@@ -4,14 +4,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+
 @Setter
 @Getter
-public class UploadHomeworkRequest {
+public class UploadMarksRequest {
 
     private Integer courseId;
 
-    private String description;
+    private LocalDate uploadDate;
 
-    private MultipartFile homeworkFile;
-
+    private MultipartFile marksFile;
 }

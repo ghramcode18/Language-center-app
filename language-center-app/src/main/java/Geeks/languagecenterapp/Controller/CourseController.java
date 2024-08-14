@@ -174,7 +174,7 @@ public class CourseController {
     }
 
     @PostMapping("/uploadMarks")
-    public ResponseEntity<?> uploadMarksFile(@ModelAttribute UploadMarksRequset body) {
+    public ResponseEntity<?> uploadMarksFile(@ModelAttribute UploadMarksRequest body) {
         return courseService.uploadMarksFile(body);
     }
 

@@ -147,6 +147,7 @@ public class UserService {
     private Register_Login_Response initializeResponseObject(UserEntity user, String token) {
         Register_Login_Response response = new Register_Login_Response();
         response.setMessage("Successfully Operation");
+        response.setId(user.getId());
         response.setFirstName(user.getFirstName());
         response.setLastName(user.getLastName());
         response.setEmail(user.getEmail());

@@ -437,7 +437,7 @@ public class CourseService {
 
     }
 
-    public ResponseEntity<?> uploadMarksFile(UploadMarksRequset data) {
+    public ResponseEntity<?> uploadMarksFile(UploadMarksRequest data) {
         //Check User Role
         if (HandleCurrentUserSession.getCurrentUserRole().equals(UserAccountEnum.ADMIN)) {
             MultipartFile marks = data.getMarksFile();
