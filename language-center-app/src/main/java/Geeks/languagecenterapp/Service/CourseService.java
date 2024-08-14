@@ -48,6 +48,8 @@ public class CourseService {
     private CourseImageRepository courseImageRepository;
     @Autowired
     private MarkRepository markRepository;
+    @Autowired
+    private HomeWorkRepository homeWorkRepository;
 
 
     //Add Course by admin and return ok , return bad request response otherwise
@@ -190,6 +192,7 @@ public class CourseService {
         List<CourseEntity> courses = courseRepository.findAll();
         return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
+
     // Get all recent courses
     public List<CourseResponse> getAllRecent() {
         List<CourseEntity> courses = courseRepository.findByOrderByStartDateDesc();
@@ -207,16 +210,17 @@ public class CourseService {
         List<CourseEntity> courses = courseRepository.findTopRatedCourses();
         return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
+
     // Convert CourseEntity to CourseDTO
     private CourseResponse convertToDTO(CourseEntity course) {
         CourseResponse dto = new CourseResponse();
         dto.setId(course.getId());
         dto.setTitle(course.getTitle());
         dto.setDescription(course.getDescription());
-        double newPrice=0;
-        double price=course.getPrice();
-        int discount=course.getDiscount();
-        newPrice=price-((price*discount)/100);
+        double newPrice = 0;
+        double price = course.getPrice();
+        int discount = course.getDiscount();
+        newPrice = price - ((price * discount) / 100);
         dto.setPrice(newPrice);
         dto.setNumOfHours(course.getNumOfHours());
         dto.setNumOfSessions(course.getNumOfSessions());
@@ -438,7 +442,7 @@ public class CourseService {
         if (HandleCurrentUserSession.getCurrentUserRole().equals(UserAccountEnum.ADMIN)) {
             MultipartFile marks = data.getMarksFile();
 
-            if (marks.isEmpty()) {
+            if (marks == null || marks.isEmpty()) {
                 return new ResponseEntity<>("Please upload a marks!", HttpStatus.BAD_REQUEST);
             }
 
@@ -450,7 +454,7 @@ public class CourseService {
                 return new ResponseEntity<>("Please upload an Excel File!", HttpStatus.BAD_REQUEST);
             }
 
-            List<String[]> result = MarkService.handleExcelFile(marks);
+            List<Map<String, String>> result = MarkService.handleExcelFile(marks);
             if (result.isEmpty()) {
                 return new ResponseEntity<>("Failed to process the file", HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -486,8 +490,8 @@ public class CourseService {
             if (userRepository.findByPhoneNumber(data.getPhone()).isPresent()) {
                 if (markRepository.findFilesByCourseId(data.getCourseId()).isPresent()) {
                     String markFilePath = markRepository.findFilesByCourseId(data.getCourseId()).get();
-                    List<String[]> markFile = MarkService.handleExcelFile(MarkService.convertFileToMultipartFile(markFilePath));
-                    List<String[]> result = MarkService.searchInExcelFile(markFile, data.getPhone());
+                    List<Map<String, String>> markFile = MarkService.handleExcelFile(MarkService.convertFileToMultipartFile(markFilePath));
+                    Map<String, String> result = MarkService.searchInExcelFile(markFile, data.getPhone());
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>("Course With this Id Not Found Or Mark File Not Uploaded Yet", HttpStatus.BAD_REQUEST);
@@ -500,8 +504,8 @@ public class CourseService {
         }
     }
 
-    public ResponseEntity<?> addDiscount(DiscountRequest body ,int id) {
-        Map <String,String> response = new HashMap<>();
+    public ResponseEntity<?> addDiscount(DiscountRequest body, int id) {
+        Map<String, String> response = new HashMap<>();
 
         Optional<CourseEntity> course = courseRepository.findById(id);
         if (course.isPresent()) {
@@ -509,14 +513,44 @@ public class CourseService {
             courseRepository.save(course.get());
 
             // Create a response object with the success message
-            response.put("message","Discount added to the course successfully.");
+            response.put("message", "Discount added to the course successfully.");
             return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        else {
+        } else {
             // Create a response object with the success message
-            response.put("message","Course Not Found.");
+            response.put("message", "Course Not Found.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
     }
+
+    public ResponseEntity<?> UploadHomeworkFile(UploadHomeworkRequest data) {
+        UserEntity currentUser = HandleCurrentUserSession.getCurrentUser();
+        if (currentUser.getAccountType().equals(UserAccountEnum.ADMIN) || currentUser.getAccountType().equals(UserAccountEnum.TEACHER)) {
+            MultipartFile file = data.getHomeworkFile();
+            if (file == null || file.isEmpty()) {
+                return new ResponseEntity<>("Please upload a HomeWork File!", HttpStatus.BAD_REQUEST);
+            }
+            if (courseRepository.findById(data.getCourseId()).isEmpty()) {
+                return new ResponseEntity<>("Course With this Id Not Found", HttpStatus.BAD_REQUEST);
+            }
+            // Upload File To Server
+            String resultPath = FilesManagement.uploadSingleFile(file);
+            if (resultPath != null) {
+                // Initialize Homework Object
+                HomeWorkEntity homeWorkEntity = new HomeWorkEntity();
+                homeWorkEntity.setUser(HandleCurrentUserSession.getCurrentUser());
+                homeWorkEntity.setCourse(CourseEntity.builder().id(data.getCourseId()).build());
+                homeWorkEntity.setMedia(resultPath);
+                homeWorkEntity.setDescription(data.getDescription());
+                // Save File In DataBase
+                homeWorkRepository.save(homeWorkEntity);
+                return new ResponseEntity<>("Homework Successfully Uploaded", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Something Went Wrong .. try again later", HttpStatus.UNAUTHORIZED);
+            }
+        } else {
+            return new ResponseEntity<>("Only Teachers And Admins Can Upload Homeworks", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
 }

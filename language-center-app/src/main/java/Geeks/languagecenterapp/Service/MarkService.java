@@ -9,40 +9,53 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 @Service
 public class MarkService {
 
-    public static List<String[]> handleExcelFile(MultipartFile file) {
-        List<String[]> data = new ArrayList<>();
+    public static List<Map<String, String>> handleExcelFile(MultipartFile file) {
+        List<Map<String, String>> data = new ArrayList<>();
 
         try (InputStream is = file.getInputStream();
-             Workbook workbook = new XSSFWorkbook(is)) { // 1 Sami 09446346423 68 89 78
+             Workbook workbook = new XSSFWorkbook(is)) {
 
             Sheet sheet = workbook.getSheetAt(0);
 
             for (Row row : sheet) {
-                Iterator<Cell> cells = row.iterator();
-
-                List<String> cellData = new ArrayList<>();
-                while (cells.hasNext()) {
-                    Cell cell = cells.next();
-                    switch (cell.getCellType()) {
-                        case STRING:
-                            cellData.add(cell.getStringCellValue());
-                            break;
-                        case NUMERIC:
-                            cellData.add(String.valueOf(cell.getNumericCellValue()));
-                            break;
-                        default:
-                            cellData.add("Invalid Type");
+                if (row.getRowNum() > 0) {
+                    Iterator<Cell> cells = row.iterator();
+                    Map<String, String> cellData = new HashMap<>();
+                    int counter = 0;
+                    while (cells.hasNext() && counter < 5) {
+                        Cell cell = cells.next();
+                        switch (counter) {
+                            case 0: {
+                                cellData.put("ID ", cell.toString());
+                                break;
+                            }
+                            case 1: {
+                                cellData.put("Name ", cell.toString());
+                                break;
+                            }
+                            case 2: {
+                                cellData.put("Phone ", cell.toString());
+                                break;
+                            }
+                            case 3: {
+                                cellData.put("Reading Mark ", cell.toString());
+                                break;
+                            }
+                            case 4: {
+                                cellData.put("Writing Mark ", cell.toString());
+                                break;
+                            }
+                        }
+                        counter++;
                     }
+                    data.add(cellData);
                 }
-                data.add(cellData.toArray(new String[0]));
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -51,17 +64,13 @@ public class MarkService {
         return data;
     }
 
-    public static List<String[]> searchInExcelFile(List<String[]> data, String keyword) {
-        List<String[]> searchResults = new ArrayList<>();
-        for (String[] row : data) {
-            for (String cell : row) {
-                if (cell != null && cell.contains(keyword)) {
-                    searchResults.add(row);
-                    break;
-                }
+    public static Map<String, String> searchInExcelFile(List<Map<String, String>> data, String keyword) {
+        for (Map<String, String> row : data) {
+            if (row.containsValue(keyword)) {
+                return row;
             }
         }
-        return searchResults;
+        return null;
     }
 
     public static MultipartFile convertFileToMultipartFile(String filePath) {
