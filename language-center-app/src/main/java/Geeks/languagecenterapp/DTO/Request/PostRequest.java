@@ -19,6 +19,10 @@ public class PostRequest {
 
     private PostEnum type;
 
+    private String location;
+
+    private String date;
+
     private MultipartFile cover;
 
     private List<MultipartFile> images;

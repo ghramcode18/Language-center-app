@@ -70,11 +70,9 @@ public class UserController {
     }
 
     @GetMapping("/showTeachers")
-    public List<UserEntity> getTeachers(@RequestParam UserAccountEnum accountType) throws Exception {
-        if (accountType.equals(UserAccountEnum.TEACHER))
-            return userService.getUsers(UserAccountEnum.TEACHER);
-        else throw new Exception("please write a valid type");
+    public List<UserEntity> getTeachers() throws Exception {
 
+            return userService.getUsers(UserAccountEnum.TEACHER);
     }
 
     @GetMapping("/showStudents")
