@@ -5,6 +5,8 @@ import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
 import Geeks.languagecenterapp.DTO.Request.LoginRequest;
 import Geeks.languagecenterapp.DTO.Request.RateRequest;
 import Geeks.languagecenterapp.DTO.Request.RegisterRequest;
+import Geeks.languagecenterapp.DTO.Response.CourseDayResponse;
+import Geeks.languagecenterapp.DTO.Response.CourseResponse;
 import Geeks.languagecenterapp.DTO.Response.Register_Login_Response;
 import Geeks.languagecenterapp.DTO.Response.UserProfileResponse;
 import Geeks.languagecenterapp.Model.*;
@@ -30,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -61,6 +64,9 @@ public class UserService {
 
     @Autowired
     private final UserRateRepository userRateRepository;
+
+    @Autowired
+    private final CourseImageRepository courseImageRepository;
 
 
     public Register_Login_Response registerUser(RegisterRequest registerRequest) throws CustomException {
@@ -180,23 +186,54 @@ public class UserService {
         return userRepository.findByAccountType(accountType);
     }
 
-    public List<CourseEntity> getEnrolledCourses(UserEntity user) {
+    public List<CourseResponse> getEnrolledCourses(UserEntity user) {
         List<EnrollCourseEntity> enrollments = enrollCourseRepository.findByUser(user);
         List<CourseEntity> courses = new ArrayList<>();
         for (EnrollCourseEntity enrollment : enrollments) {
             courses.add(enrollment.getCourse());
         }
-        return courses;
+        return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+    // Convert CourseEntity to CourseDTO
+    private CourseResponse convertToDTO(CourseEntity course) {
+        CourseResponse dto = new CourseResponse();
+        dto.setId(course.getId());
+        dto.setTitle(course.getTitle());
+        dto.setDescription(course.getDescription());
+        double newPrice=0;
+        double price=course.getPrice();
+        int discount=course.getDiscount();
+        newPrice=price-((price*discount)/100);
+        dto.setPrice(newPrice);
+        dto.setNumOfHours(course.getNumOfHours());
+        dto.setNumOfSessions(course.getNumOfSessions());
+        dto.setNumOfRoom(course.getNumOfRoom());
+        dto.setStartDate(course.getStartDate());
+        dto.setProgress(course.getProgress());
+        dto.setLevel(course.getLevel());
+        dto.setDiscount(course.getDiscount());
+//        dto.setRating(courseRepository.findAverageRatingByCourseId(course.getId()));
+        dto.setImage(courseImageRepository.findByCourseId(course.getId()));
+        List<CourseDayResponse> courseDayDTOs = course.getCourseDayList().stream().map(this::convertToCourseDayDTO).collect(Collectors.toList());
+        dto.setCourseDayList(courseDayDTOs);
+        return dto;
     }
 
+    // Convert CourseDayEntity to CourseDayDTO
+    private CourseDayResponse convertToCourseDayDTO(CourseDayEntity courseDay) {
+        CourseDayResponse dto = new CourseDayResponse();
+        dto.setDay(courseDay.getDay().getDay());
+        dto.setCourseTime(courseDay.isCourseTime() ? "Morning" : "Evening");
+        return dto;
+    }
     // Get favorite courses of a user
-    public List<CourseEntity> getFavoriteCourses(UserEntity user) {
+    public List<CourseResponse> getFavoriteCourses(UserEntity user) {
         List<FavoriteEntity> favoriteCourses = favoriteRepository.findByUser(user);
         List<CourseEntity> courses = new ArrayList<>();
         for (FavoriteEntity favorite : favoriteCourses) {
             courses.add(favorite.getCourse());
         }
-        return courses;
+        return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     //Enroll in a course

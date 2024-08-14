@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,13 @@ public class PostService {
             post.setTitle(postRequest.getTitle());
             post.setContent(postRequest.getContent());
             post.setType(postRequest.getType());
+            // Manually parse the startDate from String to LocalDateTime
+            if (postRequest.getDate()!=null  && postRequest.getLocation()!=null) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                LocalDateTime parsedStartDate = LocalDateTime.parse(postRequest.getDate(), formatter);
+                post.setEventDate(parsedStartDate);
+                post.setEventPlace(postRequest.getLocation());
+            }
             post.setCreatedAt(LocalDateTime.now());
             postRepository.save(post);
             String cover = FilesManagement.uploadSingleFile(postRequest.getCover());
@@ -84,6 +92,11 @@ public class PostService {
                 post.get().setContent(postRequest.getContent());
                 post.get().setType(postRequest.getType());
                 post.get().setCreatedAt(LocalDateTime.now());
+                // Manually parse the startDate from String to LocalDateTime
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                LocalDateTime parsedStartDate = LocalDateTime.parse(postRequest.getDate(), formatter);
+                post.get().setEventDate(parsedStartDate);
+                post.get().setEventPlace(post.get().getEventPlace());
                 String imageUrl = FilesManagement.uploadSingleFile(postRequest.getCover());
                 if (imageUrl != null) {
                     CourseImageEntity imageEntity = new CourseImageEntity();
@@ -157,6 +170,8 @@ public class PostService {
         dto.setTitle(post.getTitle());
         dto.setContent(post.getContent());
         dto.setType(post.getType());
+        dto.setEventDate(post.getEventDate());
+        dto.setEventPlace(post.getEventPlace());
         dto.setCreatedAt(post.getCreatedAt());
         dto.setImages(courseImageRepository.findByPostId(post.getId()));
         return dto;

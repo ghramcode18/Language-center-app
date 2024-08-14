@@ -19,7 +19,7 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/auth/register", "api/auth/login",
+                        .requestMatchers("api/auth/register", "api/auth/login","api/user/showTeachers",
                                             "api/placementTest/get/all","api/placementTest/get/lan","api/placementTest/get/num" ,"api/placementTest/book/{placementId}",
                                             "api/service/get/all/with-courses","api/service/get/all" ,"api/course/get/all","api/course/get/all-discount"
                                             ,"api/course/get/all-recent","api/course/get/all-top-rating","api/course/get-course-rate/{id}",

@@ -23,5 +23,9 @@ public class PostResponse {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime eventDate;
+
+    private String eventPlace;
+
     private List<CourseImageEntity> images;
 }

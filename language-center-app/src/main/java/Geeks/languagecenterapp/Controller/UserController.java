@@ -3,6 +3,7 @@ package Geeks.languagecenterapp.Controller;
 import Geeks.languagecenterapp.DTO.Request.BookRequest;
 import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
 import Geeks.languagecenterapp.DTO.Request.RateRequest;
+import Geeks.languagecenterapp.DTO.Response.CourseResponse;
 import Geeks.languagecenterapp.Model.CourseEntity;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Model.UserEntity;
@@ -39,12 +40,12 @@ public class UserController {
 
     //TODO :api need test
     @GetMapping("/enrolled-courses")
-    public List<CourseEntity> getEnrolledCourses(@AuthenticationPrincipal UserEntity user) {
+    public List<CourseResponse> getEnrolledCourses(@AuthenticationPrincipal UserEntity user) {
         return userService.getEnrolledCourses(user);
     }
     //TODO :api need test
     @GetMapping("/favorite-courses")
-    public List<CourseEntity> getFavoriteCourses(@AuthenticationPrincipal UserEntity user) throws JsonProcessingException {
+    public List<CourseResponse> getFavoriteCourses(@AuthenticationPrincipal UserEntity user) throws JsonProcessingException {
         return userService.getFavoriteCourses(user);
     }
     // Enroll Course
@@ -69,11 +70,9 @@ public class UserController {
     }
 
     @GetMapping("/showTeachers")
-    public List<UserEntity> getTeachers(@RequestParam UserAccountEnum accountType) throws Exception {
-        if (accountType.equals(UserAccountEnum.TEACHER))
-            return userService.getUsers(UserAccountEnum.TEACHER);
-        else throw new Exception("please write a valid type");
+    public List<UserEntity> getTeachers() throws Exception {
 
+            return userService.getUsers(UserAccountEnum.TEACHER);
     }
 
     @GetMapping("/showStudents")

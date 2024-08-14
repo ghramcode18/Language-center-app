@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class PlacementTestEntity {
-    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

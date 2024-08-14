@@ -144,7 +144,7 @@ public class CourseController {
     @PostMapping("/qr-attendance/{id}")
     public ResponseEntity<Object> qrAttendance(@PathVariable("id") int id ,@ModelAttribute AttendanceRequest body,@AuthenticationPrincipal UserEntity user) {
         Map<String, String> response = new HashMap<>();
-        if (user.getAccountType()!= UserAccountEnum.TEACHER){
+        if (user.getAccountType()!= UserAccountEnum.USER){
             // Create a response object with the success message
             response.put("message","You are UnAuthorized");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
