@@ -1,10 +1,13 @@
 package Geeks.languagecenterapp.Model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "homeWork")
@@ -30,4 +33,7 @@ public class HomeWorkEntity {
 
     @Column(nullable = true)
     private String description;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate date;
 }

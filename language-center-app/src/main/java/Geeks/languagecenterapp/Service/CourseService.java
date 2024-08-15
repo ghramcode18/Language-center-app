@@ -488,13 +488,17 @@ public class CourseService {
             return new ResponseEntity<>("phone must not be Null", HttpStatus.BAD_REQUEST);
         } else if (role.equals(UserAccountEnum.USER)) {
             if (userRepository.findByPhoneNumber(data.getPhone()).isPresent()) {
-                if (markRepository.findFilesByCourseId(data.getCourseId()).isPresent()) {
-                    String markFilePath = markRepository.findFilesByCourseId(data.getCourseId()).get();
-                    List<Map<String, String>> markFile = MarkService.handleExcelFile(MarkService.convertFileToMultipartFile(markFilePath));
-                    Map<String, String> result = MarkService.searchInExcelFile(markFile, data.getPhone());
-                    return new ResponseEntity<>(result, HttpStatus.OK);
+                if (enrollCourseRepository.findByUserIdAndCourseId(data.getCourseId(), user.getId()).isPresent()) {
+                    if (markRepository.findFilesByCourseId(data.getCourseId()).isPresent()) {
+                        String markFilePath = markRepository.findFilesByCourseId(data.getCourseId()).get();
+                        List<Map<String, String>> markFile = MarkService.handleExcelFile(MarkService.convertFileToMultipartFile(markFilePath));
+                        Map<String, String> result = MarkService.searchInExcelFile(markFile, data.getPhone());
+                        return new ResponseEntity<>(result, HttpStatus.OK);
+                    } else {
+                        return new ResponseEntity<>("Course With this Id Not Found Or Mark File Not Uploaded Yet", HttpStatus.BAD_REQUEST);
+                    }
                 } else {
-                    return new ResponseEntity<>("Course With this Id Not Found Or Mark File Not Uploaded Yet", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>("User Not Enroll In This Course", HttpStatus.FORBIDDEN);
                 }
             } else {
                 return new ResponseEntity<>("Student With this Phone Not Found", HttpStatus.BAD_REQUEST);
@@ -541,6 +545,7 @@ public class CourseService {
                 homeWorkEntity.setUser(HandleCurrentUserSession.getCurrentUser());
                 homeWorkEntity.setCourse(CourseEntity.builder().id(data.getCourseId()).build());
                 homeWorkEntity.setMedia(resultPath);
+                homeWorkEntity.setDate(data.getDate());
                 homeWorkEntity.setDescription(data.getDescription());
                 // Save File In DataBase
                 homeWorkRepository.save(homeWorkEntity);
@@ -550,6 +555,30 @@ public class CourseService {
             }
         } else {
             return new ResponseEntity<>("Only Teachers And Admins Can Upload Homeworks", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    public ResponseEntity<?> getCourseHomeworkFile(int id) {
+        // Check If The Course Exist
+        if (courseRepository.findById(id).isEmpty()) {
+            return new ResponseEntity<>("Course With this Id Not Found", HttpStatus.NOT_FOUND);
+        }
+        // Get Current User
+        UserEntity currentUser = HandleCurrentUserSession.getCurrentUser();
+        //Check If User Exist
+        if (userRepository.findByPhoneNumber(currentUser.getPhoneNumber()).isPresent()) {
+            return new ResponseEntity<>("Student With this Phone Not Found", HttpStatus.BAD_REQUEST);
+        }
+        // Check If This User Enroll In This Course
+        if (enrollCourseRepository.findByUserIdAndCourseId(id, currentUser.getId()).isPresent()) {
+            List<HomeWorkEntity> homeworks = homeWorkRepository.getByCourseId(id);
+            if (homeworks.isEmpty()) {
+                return new ResponseEntity<>("No Homeworks For This Course Yet", HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(homeworks, HttpStatus.OK);
+            }
+        } else {
+            return new ResponseEntity<>("User Not Enroll In This Course", HttpStatus.FORBIDDEN);
         }
     }
 

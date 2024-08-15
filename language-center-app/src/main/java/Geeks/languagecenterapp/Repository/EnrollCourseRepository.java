@@ -10,9 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface EnrollCourseRepository extends JpaRepository<EnrollCourseEntity,Integer> {
+public interface EnrollCourseRepository extends JpaRepository<EnrollCourseEntity, Integer> {
     @Query("SELECT e FROM EnrollCourseEntity e WHERE e.course.id = :courseId")
     List<EnrollCourseEntity> findByCourseId(int courseId);
+
     List<EnrollCourseEntity> findByUser(UserEntity user);
 
     Optional<EnrollCourseEntity> findByUserIdAndCourseId(int id, int id1);
