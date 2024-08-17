@@ -601,7 +601,7 @@ public class CourseService {
                         storage.put("students", students);
                     } else {
                         storage.put("students", new ArrayList<>());
-                     }
+                    }
                     result.add(storage);
                 }
                 return new ResponseEntity<>(result, HttpStatus.OK);
