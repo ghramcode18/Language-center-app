@@ -1,10 +1,7 @@
 package Geeks.languagecenterapp.Service;
 
 import Geeks.languagecenterapp.CustomExceptions.CustomException;
-import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
-import Geeks.languagecenterapp.DTO.Request.LoginRequest;
-import Geeks.languagecenterapp.DTO.Request.RateRequest;
-import Geeks.languagecenterapp.DTO.Request.RegisterRequest;
+import Geeks.languagecenterapp.DTO.Request.*;
 import Geeks.languagecenterapp.DTO.Response.CourseDayResponse;
 import Geeks.languagecenterapp.DTO.Response.CourseResponse;
 import Geeks.languagecenterapp.DTO.Response.Register_Login_Response;
@@ -30,44 +27,46 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class UserService {
 
     @Autowired
-    private final UserRepository userRepository;
+    private  UserRepository userRepository;
 
     @Autowired
-    private final ImageRepository imageRepository;
+    private  ImageRepository imageRepository;
 
     @Autowired
-    private final CourseRepository courseRepository;
+    private  CourseRepository courseRepository;
 
     @Autowired
-    private final EncryptionService encryptionService;
+    private  EncryptionService encryptionService;
 
     @Autowired
-    private final JWTService jwtService;
+    private  JWTService jwtService;
 
     @Autowired
-    private final TokenService tokenService;
+    private  TokenService tokenService;
 
     @Autowired
-    private final EnrollCourseRepository enrollCourseRepository;
+    private  EnrollCourseRepository enrollCourseRepository;
 
     @Autowired
-    private final FavoriteRepository favoriteRepository;
+    private  FavoriteRepository favoriteRepository;
 
     @Autowired
-    private final UserRateRepository userRateRepository;
+    private  UserRateRepository userRateRepository;
 
     @Autowired
-    private final CourseImageRepository courseImageRepository;
+    private  CourseImageRepository courseImageRepository;
 
+    @Autowired
+    private EmailService emailService;
 
     public Register_Login_Response registerUser(RegisterRequest registerRequest) throws CustomException {
         if (userRepository.findByEmail(registerRequest.getEmail()).isPresent() || userRepository.findByPhoneNumber(registerRequest.getPhone()).isPresent()) {
@@ -388,5 +387,70 @@ public class UserService {
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
     }
+//    public void resetPassword(String token, String newPassword) throws CustomException {
+//        UserEntity user = userRepository.findByPasswordResetToken(token);
+//        if (user == null) {
+//            throw new CustomException("Invalid password reset token", 400);
+//        }
+//        //user.setPassword(passwordEncoder.encode(newPassword));
+//        user.setPasswordResetToken(null); // Clear the token after resetting the password
+//        userRepository.save(user);
+//    }
+//
+    public void sendVerificationEmail(String email) throws CustomException {
+        UserEntity user = userRepository.findByEmail(email).get();
+        if (user == null) {
+            throw new CustomException("Email not found", 404);
+        }
+        String token = UUID.randomUUID().toString();
+        user.setVerificationToken(token);
+        userRepository.save(user);
+        String verificationUrl = "http://localhost:8080/api/auth/verify-email?token=" + token;
+        emailService.sendVerificationEmail(email, verificationUrl);
+    }
 
+    public void verifyEmail(String token) throws CustomException {
+        UserEntity user = userRepository.findByVerificationToken(token);
+        if (user == null) {
+            throw new CustomException("Invalid verification token", 400);
+        }
+        user.setVerified(true);
+        user.setVerificationToken(null); // Clear the token after successful verification
+        userRepository.save(user);
+    }
+
+
+    private final Map<String, String> resetCodeStorage = new HashMap<>();
+
+    private String code =generateRandomCode();
+
+    public void initiatePasswordReset(PasswordResetRequest passwordResetRequest) {
+        if(isValidGmail(passwordResetRequest.getEmail()))
+        {emailService.sendPasswordResetEmail(passwordResetRequest.getEmail(), "Milestone Password Reset Code",  code);}
+    }
+
+    public void CheckCode(PasswordResetTokenRequest passwordResetTokenRequest) {
+        String storedCode = code;
+        if (storedCode == null || !storedCode.equals(passwordResetTokenRequest.getCode())) {
+            throw new CustomException("Invalid or expired code", 400);
+        }
+    }
+
+    public boolean isValidGmail(String email) {
+        String regex = "^[a-zA-Z0-9._%+-]+@gmail\\.com$";
+        return email.matches(regex);
+    }
+
+
+    public void changePassword(PasswordResetTokenRequest passwordResetTokenRequest) {
+        UserEntity user = userRepository.findByEmail(passwordResetTokenRequest.getEmail()).get();
+        user.setPassword(passwordResetTokenRequest.getNewPassword());
+        userRepository.save(user);
+    }
+
+    public String generateRandomCode() {
+        SecureRandom random = new SecureRandom();
+         code =String.valueOf(10000 + random.nextInt(90000)) ;
+        return code;
+    }
 }

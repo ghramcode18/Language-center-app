@@ -17,4 +17,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
     List<UserEntity> findByAccountType(UserAccountEnum accountType);
 
+
+
+
+    UserEntity findByVerificationToken(String token);
+    UserEntity findByPasswordResetToken(String token);
 }

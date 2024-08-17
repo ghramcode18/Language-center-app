@@ -37,6 +37,5 @@ public class MessageEntity {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime date;
 
-    @Column(columnDefinition = "boolean default false")
-    private Boolean isRaed;
+   private Boolean isRaed = false;
 }
