@@ -96,4 +96,6 @@ Y!YY!PJG&BPP&PGB#######################GP7YB##&PP7.^Y?Y&&&&&
 |_  __  _|    |  | .----)   |   |  |\  \----.      |  |  |  | |  |\  \----. /  /----.
   |_||_|      |__| |_______/    | _| `._____| _____|__|  |__| | _| `._____|/________|
                                              |______|
-${AnsiColor.BRIGHT_YELLOW}Powered by Spring Boot ${spring-boot.version}
+${AnsiColor.BRIGHT_YELLOW}
+
+Powered by Spring Boot ${spring-boot.version}

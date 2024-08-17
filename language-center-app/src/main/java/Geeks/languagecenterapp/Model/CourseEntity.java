@@ -3,10 +3,7 @@ package Geeks.languagecenterapp.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -16,7 +13,8 @@ import java.util.List;
 @Table(name = "course")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Setter
+@Getter
 @Builder
 public class CourseEntity {
     @Id
@@ -32,6 +30,7 @@ public class CourseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "serviceId", nullable = true)
     private ServiceEntity service;
+
     private String title;
 
     private String description;
@@ -53,37 +52,36 @@ public class CourseEntity {
 
     private int discount;
 
-    private String  level;
+    private String level;
 
 
     @JsonIgnore
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<EnrollCourseEntity> enrolledCourseList ;
+    private List<EnrollCourseEntity> enrolledCourseList;
 
     @JsonIgnore
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<FavoriteEntity> favoriteList ;
+    private List<FavoriteEntity> favoriteList;
 
     @JsonIgnore
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<HomeWorkEntity> homeWorkList ;
+    private List<HomeWorkEntity> homeWorkList;
 
     @JsonIgnore
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<AttendanceEntity> AttendanceList ;
+    private List<AttendanceEntity> AttendanceList;
 
     @JsonIgnore
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<CourseDayEntity> courseDayList ;
+    private List<CourseDayEntity> courseDayList;
 
     @JsonIgnore
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<CourseImageEntity> courseImageList ;
+    private List<CourseImageEntity> courseImageList;
 
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "markId", referencedColumnName = "id")
     private MarkEntity mark;
-
 
 }
