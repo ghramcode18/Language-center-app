@@ -582,4 +582,51 @@ public class CourseService {
         }
     }
 
+    public ResponseEntity<?> getCoursesWithStudentsForTeacher() {
+        UserEntity currentUser = HandleCurrentUserSession.getCurrentUser();
+
+        if (currentUser.getAccountType().equals(UserAccountEnum.TEACHER) || currentUser.getAccountType().equals(UserAccountEnum.ADMIN)) {
+            List<CourseEntity> teacherCourses = courseRepository.findByUserId(currentUser.getId());
+            if (!teacherCourses.isEmpty()) {
+                List<Object> result = new ArrayList<>();
+                for (CourseEntity course : teacherCourses) {
+                    Map<String, Object> storage = new HashMap<>();
+                    storage.put("course", course);
+                    List<EnrollCourseEntity> enrolledStudents = enrollCourseRepository.findByCourseId(course.getId());
+                    if (!enrolledStudents.isEmpty()) {
+                        List<UserEntity> students = new ArrayList<>();
+                        for (EnrollCourseEntity element : enrolledStudents) {
+                            students.add(convertToValidObject(userRepository.findById(element.getUser().getId()).get()));
+                        }
+                        storage.put("students", students);
+                    } else {
+                        storage.put("students", new ArrayList<>());
+                     }
+                    result.add(storage);
+                }
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("This Teacher Do not Have Any Course Yet", HttpStatus.NO_CONTENT);
+            }
+        } else {
+            return new ResponseEntity<>("Only For Teacher And Admin", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    private UserEntity convertToValidObject(UserEntity userData) {
+        UserEntity user = new UserEntity();
+        // Initialize Object
+        user.setId(userData.getId());
+        user.setFirstName(userData.getFirstName());
+        user.setLastName(userData.getLastName());
+        user.setEmail(userData.getEmail());
+        user.setBio(userData.getBio());
+        user.setDob(userData.getDob());
+        user.setAccountType(userData.getAccountType());
+        user.setGender(userData.getGender());
+        user.setPhoneNumber(userData.getPhoneNumber());
+        user.setEducation(userData.getEducation());
+        return user;
+    }
+
 }

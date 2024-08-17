@@ -208,4 +208,9 @@ public class CourseController {
         return courseService.getCourseHomeworkFile(Id);
     }
 
+    @GetMapping("/getCoursesWithStudentsForTeacher")
+    public ResponseEntity<?> getCourseWithStudents() {
+        return courseService.getCoursesWithStudentsForTeacher();
+    }
+
 }

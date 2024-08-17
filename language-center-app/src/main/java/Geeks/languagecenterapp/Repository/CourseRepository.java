@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Repository
-public interface CourseRepository extends JpaRepository<CourseEntity,Integer> {
+public interface CourseRepository extends JpaRepository<CourseEntity, Integer> {
     Collection<Object> findByServiceId(int id);
 
     List<CourseEntity> findByOrderByStartDateDesc();
@@ -22,4 +22,6 @@ public interface CourseRepository extends JpaRepository<CourseEntity,Integer> {
 
     @Query("SELECT AVG(e.rate) FROM EnrollCourseEntity e WHERE e.course.id = :courseId")
     float findAverageRatingByCourseId(int courseId);
+
+    List<CourseEntity> findByUserId (int id);
 }
