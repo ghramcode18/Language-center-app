@@ -50,29 +50,10 @@ public class AuthController {
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         return new ResponseEntity<>(userService.logout(request, response, authentication), HttpStatus.OK);
     }
-    @PostMapping("/send-verification-email")
-    public ResponseEntity<?> sendVerificationEmail(@Valid @RequestParam String email) {
-        try {
-            userService.sendVerificationEmail(email);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (CustomException ex) {
-            return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBody());
-        }
-    }
-
-    @GetMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(@RequestParam String token) {
-        try {
-            userService.verifyEmail(token);
-            return new ResponseEntity<>("Email successfully verified!", HttpStatus.OK);
-        } catch (CustomException ex) {
-            return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBody());
-        }
-    }
 
 
     @PostMapping("/reset-password")
-    public ResponseEntity<Map<String, String>> initiatePasswordReset( @Valid @ModelAttribute PasswordResetRequest passwordResetRequest) {
+    public ResponseEntity<Map<String, String>> initiatePasswordReset( @ModelAttribute PasswordResetRequest passwordResetRequest) {
         Map<String, String> response = new HashMap<>();
         try {
         userService.initiatePasswordReset(passwordResetRequest);
@@ -84,7 +65,7 @@ public class AuthController {
     }}
 
     @PostMapping("/check-code")
-    public ResponseEntity<Map<String, String>> resetPassword(@Valid @ModelAttribute PasswordResetTokenRequest passwordResetTokenRequest) {
+    public ResponseEntity<Map<String, String>> resetPassword( @ModelAttribute PasswordResetTokenRequest passwordResetTokenRequest) {
         userService.CheckCode(passwordResetTokenRequest);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Code has been check successfully");
@@ -92,7 +73,7 @@ public class AuthController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<Map<String, String>> changePassword(@Valid @ModelAttribute PasswordResetTokenRequest passwordResetTokenRequest) {
+    public ResponseEntity<Map<String, String>> changePassword( @ModelAttribute PasswordResetTokenRequest passwordResetTokenRequest) {
         userService.changePassword(passwordResetTokenRequest);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Password has been changed successfully");
@@ -101,7 +82,7 @@ public class AuthController {
 
 
     @PostMapping("/Verify-account")
-    public ResponseEntity<Map<String, String>> VerifyAccount( @Valid @ModelAttribute PasswordResetRequest passwordResetRequest) {
+    public ResponseEntity<Map<String, String>> VerifyAccount(  @ModelAttribute PasswordResetRequest passwordResetRequest) {
         Map<String, String> response = new HashMap<>();
         try {
             userService.VerifyAccount(passwordResetRequest);
@@ -114,7 +95,7 @@ public class AuthController {
 
 
     @PostMapping("/activated-account")
-    public ResponseEntity<Map<String, String>> ActivatedAccount(@Valid @ModelAttribute PasswordResetTokenRequest passwordResetTokenRequest) {
+    public ResponseEntity<Map<String, String>> ActivatedAccount( @ModelAttribute PasswordResetTokenRequest passwordResetTokenRequest) {
         userService.ActivatedAccount(passwordResetTokenRequest);
         Map<String, String> response = new HashMap<>();
         response.put("message", "The account has been activate successfully");

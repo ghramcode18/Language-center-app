@@ -397,27 +397,7 @@ public class UserService {
 //        userRepository.save(user);
 //    }
 //
-    public void sendVerificationEmail(String email) throws CustomException {
-        UserEntity user = userRepository.findByEmail(email).get();
-        if (user == null) {
-            throw new CustomException("Email not found", 404);
-        }
-        String token = UUID.randomUUID().toString();
-        user.setVerificationToken(token);
-        userRepository.save(user);
-        String verificationUrl = "http://localhost:8080/api/auth/verify-email?token=" + token;
-        emailService.sendVerificationEmail(email, verificationUrl);
-    }
 
-    public void verifyEmail(String token) throws CustomException {
-        UserEntity user = userRepository.findByVerificationToken(token);
-        if (user == null) {
-            throw new CustomException("Invalid verification token", 400);
-        }
-        user.setVerified(true);
-        user.setVerificationToken(null); // Clear the token after successful verification
-        userRepository.save(user);
-    }
 
 
     private final Map<String, String> resetCodeStorage = new HashMap<>();
