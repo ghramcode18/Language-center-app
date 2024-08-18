@@ -429,6 +429,19 @@ public class UserService {
         {emailService.sendPasswordResetEmail(passwordResetRequest.getEmail(), "Milestone Password Reset Code",  code);}
     }
 
+    public void VerifyAccount(PasswordResetRequest passwordResetRequest) {
+        if(isValidGmail(passwordResetRequest.getEmail()))
+        {emailService.sendPasswordResetEmail(passwordResetRequest.getEmail(), "Milestone Verify Account Code",  code);}
+    }
+
+    public void ActivatedAccount(PasswordResetTokenRequest passwordResetTokenRequest) {
+        UserEntity user = userRepository.findByEmail(passwordResetTokenRequest.getEmail()).get();
+        user.setVerified(true);
+        userRepository.save(user);
+    }
+
+
+
     public void CheckCode(PasswordResetTokenRequest passwordResetTokenRequest) {
         String storedCode = code;
         if (storedCode == null || !storedCode.equals(passwordResetTokenRequest.getCode())) {

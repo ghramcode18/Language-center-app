@@ -83,7 +83,7 @@ public class AuthController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }}
 
-    @PostMapping("/reset-password/confirm")
+    @PostMapping("/check-code")
     public ResponseEntity<Map<String, String>> resetPassword(@Valid @ModelAttribute PasswordResetTokenRequest passwordResetTokenRequest) {
         userService.CheckCode(passwordResetTokenRequest);
         Map<String, String> response = new HashMap<>();
@@ -98,5 +98,28 @@ public class AuthController {
         response.put("message", "Password has been changed successfully");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+
+    @PostMapping("/Verify-account")
+    public ResponseEntity<Map<String, String>> VerifyAccount( @Valid @ModelAttribute PasswordResetRequest passwordResetRequest) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            userService.VerifyAccount(passwordResetRequest);
+            response.put("message", "Verify code sent to email");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (CustomException ex) {
+            response.put("message", "please enter valid email");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }}
+
+
+    @PostMapping("/activated-account")
+    public ResponseEntity<Map<String, String>> ActivatedAccount(@Valid @ModelAttribute PasswordResetTokenRequest passwordResetTokenRequest) {
+        userService.ActivatedAccount(passwordResetTokenRequest);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "The account has been activate successfully");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 
 }
