@@ -4,7 +4,9 @@ import Geeks.languagecenterapp.DTO.Request.BookRequest;
 import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
 import Geeks.languagecenterapp.DTO.Request.RateRequest;
 import Geeks.languagecenterapp.DTO.Response.CourseResponse;
+import Geeks.languagecenterapp.DTO.Response.OrderCertificateResponse;
 import Geeks.languagecenterapp.Model.CourseEntity;
+import Geeks.languagecenterapp.Model.EnrollCourseEntity;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
 import Geeks.languagecenterapp.Model.UserEntity;
 import Geeks.languagecenterapp.Service.UserService;
@@ -34,7 +36,7 @@ public class UserController {
     }
 
     @PostMapping("/certificates")
-    public ResponseEntity<?> uploadTeacherCertificates (@Param("files") List<MultipartFile> files) {
+    public ResponseEntity<?> uploadTeacherCertificates(@Param("files") List<MultipartFile> files) {
         return userService.uploadCertificates(files);
     }
 
@@ -43,36 +45,51 @@ public class UserController {
     public List<CourseResponse> getEnrolledCourses(@AuthenticationPrincipal UserEntity user) {
         return userService.getEnrolledCourses(user);
     }
+
     //TODO :api need test
     @GetMapping("/favorite-courses")
     public List<CourseResponse> getFavoriteCourses(@AuthenticationPrincipal UserEntity user) throws JsonProcessingException {
         return userService.getFavoriteCourses(user);
     }
+
     // Enroll Course
     @PostMapping("/enroll-course/{courseId}")
     public ResponseEntity<Object> enrollCourse(@PathVariable("courseId") int id, @ModelAttribute EnrollRequest body) throws JsonProcessingException {
         return userService.enroll(body, id);
     }
+
     // Rate Course
     @PostMapping("/rate-course/{courseId}")
     public ResponseEntity<Object> rateCourse(@PathVariable("courseId") int id, @ModelAttribute RateRequest body) throws JsonProcessingException {
         return userService.rateCourse(body, id);
     }
+
     // Rate teacher
     @PostMapping("/rate-teacher/{teacherId}")
     public ResponseEntity<Object> rateTeacher(@PathVariable("teacherId") int id, @ModelAttribute RateRequest body) throws JsonProcessingException {
         return userService.rateTeacher(body, id);
     }
+
     // Get Teacher Rate
     @GetMapping("/get-teacher-rate/{id}")
-    public ResponseEntity<Object> getCourseRate(@PathVariable("id") int id ) throws JsonProcessingException {
+    public ResponseEntity<Object> getCourseRate(@PathVariable("id") int id) throws JsonProcessingException {
         return userService.getTeacherRate(id);
+    }
+
+    @PostMapping("/makeOrderCertificate")
+    public ResponseEntity<?> addOrderCirCertificate(@RequestParam("courseId") int id) {
+        return userService.makeOrderCertificate(id);
+    }
+
+    @GetMapping("/getOrderCertificate")
+    public ResponseEntity<?> getAllOrderCertificate(@RequestParam("courseId") int id) {
+        return userService.getAllOrderCertificate(id);
     }
 
     @GetMapping("/showTeachers")
     public List<UserEntity> getTeachers() throws Exception {
 
-            return userService.getUsers(UserAccountEnum.TEACHER);
+        return userService.getUsers(UserAccountEnum.TEACHER);
     }
 
     @GetMapping("/showStudents")

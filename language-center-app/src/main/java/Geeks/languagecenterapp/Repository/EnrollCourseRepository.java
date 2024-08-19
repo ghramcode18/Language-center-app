@@ -17,4 +17,6 @@ public interface EnrollCourseRepository extends JpaRepository<EnrollCourseEntity
     List<EnrollCourseEntity> findByUser(UserEntity user);
 
     Optional<EnrollCourseEntity> findByUserIdAndCourseId(int id, int id1);
+
+    List<EnrollCourseEntity> findByIsOrderCertification (boolean x);
 }

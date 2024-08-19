@@ -5,10 +5,7 @@ import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
 import Geeks.languagecenterapp.DTO.Request.LoginRequest;
 import Geeks.languagecenterapp.DTO.Request.RateRequest;
 import Geeks.languagecenterapp.DTO.Request.RegisterRequest;
-import Geeks.languagecenterapp.DTO.Response.CourseDayResponse;
-import Geeks.languagecenterapp.DTO.Response.CourseResponse;
-import Geeks.languagecenterapp.DTO.Response.Register_Login_Response;
-import Geeks.languagecenterapp.DTO.Response.UserProfileResponse;
+import Geeks.languagecenterapp.DTO.Response.*;
 import Geeks.languagecenterapp.Model.*;
 import Geeks.languagecenterapp.Model.Enum.ImageEnum;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
@@ -16,6 +13,7 @@ import Geeks.languagecenterapp.Repository.*;
 import Geeks.languagecenterapp.Service.SecurityServices.EncryptionService;
 import Geeks.languagecenterapp.Service.SecurityServices.JWTService;
 import Geeks.languagecenterapp.Tools.FilesManagement;
+import Geeks.languagecenterapp.Tools.HandleCurrentUserSession;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -194,16 +192,17 @@ public class UserService {
         }
         return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
+
     // Convert CourseEntity to CourseDTO
     private CourseResponse convertToDTO(CourseEntity course) {
         CourseResponse dto = new CourseResponse();
         dto.setId(course.getId());
         dto.setTitle(course.getTitle());
         dto.setDescription(course.getDescription());
-        double newPrice=0;
-        double price=course.getPrice();
-        int discount=course.getDiscount();
-        newPrice=price-((price*discount)/100);
+        double newPrice = 0;
+        double price = course.getPrice();
+        int discount = course.getDiscount();
+        newPrice = price - ((price * discount) / 100);
         dto.setPrice(newPrice);
         dto.setNumOfHours(course.getNumOfHours());
         dto.setNumOfSessions(course.getNumOfSessions());
@@ -226,6 +225,7 @@ public class UserService {
         dto.setCourseTime(courseDay.isCourseTime() ? "Morning" : "Evening");
         return dto;
     }
+
     // Get favorite courses of a user
     public List<CourseResponse> getFavoriteCourses(UserEntity user) {
         List<FavoriteEntity> favoriteCourses = favoriteRepository.findByUser(user);
@@ -387,6 +387,56 @@ public class UserService {
             response.put("message", "Only Teachers And Admins Can Upload Certificates");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    public ResponseEntity<?> makeOrderCertificate(int courseId) {
+        UserEntity currentUser = HandleCurrentUserSession.getCurrentUser();
+        Optional<EnrollCourseEntity> enroll = enrollCourseRepository.findByUserIdAndCourseId(currentUser.getId(), courseId);
+        if (courseRepository.findById(courseId).isPresent()) {
+            if (enroll.isPresent()) {
+                enroll.get().setOrderCertification(true);
+                enrollCourseRepository.save(enroll.get());
+                return new ResponseEntity<>("Added Successfully", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("This Student Not Enroll In this Course", HttpStatus.FORBIDDEN);
+            }
+        } else {
+            return new ResponseEntity<>("This Course Not Exist", HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    public ResponseEntity<?> getAllOrderCertificate(int id) {
+        if (courseRepository.findById(id).isPresent()) {
+            List<EnrollCourseEntity> enrolls = enrollCourseRepository.findByIsOrderCertification(true);
+            return new ResponseEntity<>(enrolls.stream().map(this::convertToDTO).collect(Collectors.toList()), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("This Course Not Exist", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Convert CourseEntity to CourseDTO
+    private OrderCertificateResponse convertToDTO(EnrollCourseEntity enroll) {
+        OrderCertificateResponse order = new OrderCertificateResponse();
+        order.setOrderCertificate(enroll.isOrderCertification());
+        UserEntity user = new UserEntity();
+        // Initialize Object
+        user.setId(getUser(enroll).getId());
+        user.setFirstName(enroll.getUser().getFirstName());
+        user.setLastName(enroll.getUser().getLastName());
+        user.setEmail(enroll.getUser().getEmail());
+        user.setBio(enroll.getUser().getBio());
+        user.setDob(enroll.getUser().getDob());
+        user.setAccountType(enroll.getUser().getAccountType());
+        user.setGender(enroll.getUser().getGender());
+        user.setPhoneNumber(enroll.getUser().getPhoneNumber());
+        user.setEducation(enroll.getUser().getEducation());
+        order.setUser(user);
+        return order;
+    }
+
+    private static UserEntity getUser(EnrollCourseEntity enroll) {
+        return enroll.getUser();
     }
 
 }
