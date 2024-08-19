@@ -2,10 +2,7 @@ package Geeks.languagecenterapp.Service;
 
 import Geeks.languagecenterapp.CustomExceptions.CustomException;
 import Geeks.languagecenterapp.DTO.Request.*;
-import Geeks.languagecenterapp.DTO.Response.CourseDayResponse;
-import Geeks.languagecenterapp.DTO.Response.CourseResponse;
-import Geeks.languagecenterapp.DTO.Response.Register_Login_Response;
-import Geeks.languagecenterapp.DTO.Response.UserProfileResponse;
+import Geeks.languagecenterapp.DTO.Response.*;
 import Geeks.languagecenterapp.Model.*;
 import Geeks.languagecenterapp.Model.Enum.ImageEnum;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
@@ -13,6 +10,7 @@ import Geeks.languagecenterapp.Repository.*;
 import Geeks.languagecenterapp.Service.SecurityServices.EncryptionService;
 import Geeks.languagecenterapp.Service.SecurityServices.JWTService;
 import Geeks.languagecenterapp.Tools.FilesManagement;
+import Geeks.languagecenterapp.Tools.HandleCurrentUserSession;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -398,8 +396,6 @@ public class UserService {
 //    }
 //
 
-
-
     private final Map<String, String> resetCodeStorage = new HashMap<>();
 
     private String code =generateRandomCode();
@@ -420,8 +416,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-
-
     public void CheckCode(PasswordResetTokenRequest passwordResetTokenRequest) {
         String storedCode = code;
         if (storedCode == null || !storedCode.equals(passwordResetTokenRequest.getCode())) {
@@ -434,7 +428,6 @@ public class UserService {
         return email.matches(regex);
     }
 
-
     public void changePassword(PasswordResetTokenRequest passwordResetTokenRequest) {
         UserEntity user = userRepository.findByEmail(passwordResetTokenRequest.getEmail()).get();
         user.setPassword(passwordResetTokenRequest.getNewPassword());
@@ -446,4 +439,55 @@ public class UserService {
          code =String.valueOf(10000 + random.nextInt(90000)) ;
         return code;
     }
+
+    public ResponseEntity<?> makeOrderCertificate(int courseId) {
+        UserEntity currentUser = HandleCurrentUserSession.getCurrentUser();
+        Optional<EnrollCourseEntity> enroll = enrollCourseRepository.findByUserIdAndCourseId(currentUser.getId(), courseId);
+        if (courseRepository.findById(courseId).isPresent()) {
+            if (enroll.isPresent()) {
+                enroll.get().setOrderCertification(true);
+                enrollCourseRepository.save(enroll.get());
+                return new ResponseEntity<>("Added Successfully", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("This Student Not Enroll In this Course", HttpStatus.FORBIDDEN);
+            }
+        } else {
+            return new ResponseEntity<>("This Course Not Exist", HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    public ResponseEntity<?> getAllOrderCertificate(int id) {
+        if (courseRepository.findById(id).isPresent()) {
+            List<EnrollCourseEntity> enrolls = enrollCourseRepository.findByIsOrderCertification(true);
+            return new ResponseEntity<>(enrolls.stream().map(this::convertToDTO).collect(Collectors.toList()), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("This Course Not Exist", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Convert CourseEntity to CourseDTO
+    private OrderCertificateResponse convertToDTO(EnrollCourseEntity enroll) {
+        OrderCertificateResponse order = new OrderCertificateResponse();
+        order.setOrderCertificate(enroll.isOrderCertification());
+        UserEntity user = new UserEntity();
+        // Initialize Object
+        user.setId(getUser(enroll).getId());
+        user.setFirstName(enroll.getUser().getFirstName());
+        user.setLastName(enroll.getUser().getLastName());
+        user.setEmail(enroll.getUser().getEmail());
+        user.setBio(enroll.getUser().getBio());
+        user.setDob(enroll.getUser().getDob());
+        user.setAccountType(enroll.getUser().getAccountType());
+        user.setGender(enroll.getUser().getGender());
+        user.setPhoneNumber(enroll.getUser().getPhoneNumber());
+        user.setEducation(enroll.getUser().getEducation());
+        order.setUser(user);
+        return order;
+    }
+
+    private static UserEntity getUser(EnrollCourseEntity enroll) {
+        return enroll.getUser();
+    }
+
 }
