@@ -24,7 +24,7 @@ public class SecurityConfig {
                                             "api/service/get/all/with-courses","api/service/get/all" ,"api/course/get/all","api/course/get/all-discount"
                                             ,"api/course/get/all-recent","api/course/get/all-top-rating","api/course/get-course-rate/{id}",
                                             "api/post/get/all","api/post/get/ads","api/post/get/events","api/post/get/ads/asc","api/post/get/ads/desc",
-                                            "api/post/get/events/asc","api/post/get/events/desc" ,"api/quiz/get-all-with-questions")
+                                            "api/post/get/events/asc","api/post/get/events/desc" ,"api/quiz/get-all-with-questions","api/auth/reset-password","api/auth/check-code","api/auth/change-password","api/auth/Verify-account","api/auth/activated-account")
                         .permitAll()
                         .anyRequest()
                         .authenticated());
@@ -32,3 +32,4 @@ public class SecurityConfig {
     }
 
 }
+

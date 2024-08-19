@@ -1,11 +1,11 @@
 package Geeks.languagecenterapp.Service;
 
 import Geeks.languagecenterapp.CustomExceptions.CustomException;
-import Geeks.languagecenterapp.DTO.Request.EnrollRequest;
-import Geeks.languagecenterapp.DTO.Request.LoginRequest;
-import Geeks.languagecenterapp.DTO.Request.RateRequest;
-import Geeks.languagecenterapp.DTO.Request.RegisterRequest;
-import Geeks.languagecenterapp.DTO.Response.*;
+import Geeks.languagecenterapp.DTO.Request.*;
+import Geeks.languagecenterapp.DTO.Response.CourseDayResponse;
+import Geeks.languagecenterapp.DTO.Response.CourseResponse;
+import Geeks.languagecenterapp.DTO.Response.Register_Login_Response;
+import Geeks.languagecenterapp.DTO.Response.UserProfileResponse;
 import Geeks.languagecenterapp.Model.*;
 import Geeks.languagecenterapp.Model.Enum.ImageEnum;
 import Geeks.languagecenterapp.Model.Enum.UserAccountEnum;
@@ -13,7 +13,6 @@ import Geeks.languagecenterapp.Repository.*;
 import Geeks.languagecenterapp.Service.SecurityServices.EncryptionService;
 import Geeks.languagecenterapp.Service.SecurityServices.JWTService;
 import Geeks.languagecenterapp.Tools.FilesManagement;
-import Geeks.languagecenterapp.Tools.HandleCurrentUserSession;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,44 +27,46 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class UserService {
 
     @Autowired
-    private final UserRepository userRepository;
+    private  UserRepository userRepository;
 
     @Autowired
-    private final ImageRepository imageRepository;
+    private  ImageRepository imageRepository;
 
     @Autowired
-    private final CourseRepository courseRepository;
+    private  CourseRepository courseRepository;
 
     @Autowired
-    private final EncryptionService encryptionService;
+    private  EncryptionService encryptionService;
 
     @Autowired
-    private final JWTService jwtService;
+    private  JWTService jwtService;
 
     @Autowired
-    private final TokenService tokenService;
+    private  TokenService tokenService;
 
     @Autowired
-    private final EnrollCourseRepository enrollCourseRepository;
+    private  EnrollCourseRepository enrollCourseRepository;
 
     @Autowired
-    private final FavoriteRepository favoriteRepository;
+    private  FavoriteRepository favoriteRepository;
 
     @Autowired
-    private final UserRateRepository userRateRepository;
+    private  UserRateRepository userRateRepository;
 
     @Autowired
-    private final CourseImageRepository courseImageRepository;
+    private  CourseImageRepository courseImageRepository;
 
+    @Autowired
+    private EmailService emailService;
 
     public Register_Login_Response registerUser(RegisterRequest registerRequest) throws CustomException {
         if (userRepository.findByEmail(registerRequest.getEmail()).isPresent() || userRepository.findByPhoneNumber(registerRequest.getPhone()).isPresent()) {
@@ -192,17 +193,16 @@ public class UserService {
         }
         return courses.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
-
     // Convert CourseEntity to CourseDTO
     private CourseResponse convertToDTO(CourseEntity course) {
         CourseResponse dto = new CourseResponse();
         dto.setId(course.getId());
         dto.setTitle(course.getTitle());
         dto.setDescription(course.getDescription());
-        double newPrice = 0;
-        double price = course.getPrice();
-        int discount = course.getDiscount();
-        newPrice = price - ((price * discount) / 100);
+        double newPrice=0;
+        double price=course.getPrice();
+        int discount=course.getDiscount();
+        newPrice=price-((price*discount)/100);
         dto.setPrice(newPrice);
         dto.setNumOfHours(course.getNumOfHours());
         dto.setNumOfSessions(course.getNumOfSessions());
@@ -225,7 +225,6 @@ public class UserService {
         dto.setCourseTime(courseDay.isCourseTime() ? "Morning" : "Evening");
         return dto;
     }
-
     // Get favorite courses of a user
     public List<CourseResponse> getFavoriteCourses(UserEntity user) {
         List<FavoriteEntity> favoriteCourses = favoriteRepository.findByUser(user);
@@ -388,55 +387,63 @@ public class UserService {
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
     }
+//    public void resetPassword(String token, String newPassword) throws CustomException {
+//        UserEntity user = userRepository.findByPasswordResetToken(token);
+//        if (user == null) {
+//            throw new CustomException("Invalid password reset token", 400);
+//        }
+//        //user.setPassword(passwordEncoder.encode(newPassword));
+//        user.setPasswordResetToken(null); // Clear the token after resetting the password
+//        userRepository.save(user);
+//    }
+//
 
-    public ResponseEntity<?> makeOrderCertificate(int courseId) {
-        UserEntity currentUser = HandleCurrentUserSession.getCurrentUser();
-        Optional<EnrollCourseEntity> enroll = enrollCourseRepository.findByUserIdAndCourseId(currentUser.getId(), courseId);
-        if (courseRepository.findById(courseId).isPresent()) {
-            if (enroll.isPresent()) {
-                enroll.get().setOrderCertification(true);
-                enrollCourseRepository.save(enroll.get());
-                return new ResponseEntity<>("Added Successfully", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("This Student Not Enroll In this Course", HttpStatus.FORBIDDEN);
-            }
-        } else {
-            return new ResponseEntity<>("This Course Not Exist", HttpStatus.NOT_FOUND);
+
+
+    private final Map<String, String> resetCodeStorage = new HashMap<>();
+
+    private String code =generateRandomCode();
+
+    public void initiatePasswordReset(PasswordResetRequest passwordResetRequest) {
+        if(isValidGmail(passwordResetRequest.getEmail()))
+        {emailService.sendPasswordResetEmail(passwordResetRequest.getEmail(), "Milestone Password Reset Code",  code);}
+    }
+
+    public void VerifyAccount(PasswordResetRequest passwordResetRequest) {
+        if(isValidGmail(passwordResetRequest.getEmail()))
+        {emailService.sendPasswordResetEmail(passwordResetRequest.getEmail(), "Milestone Verify Account Code",  code);}
+    }
+
+    public void ActivatedAccount(PasswordResetTokenRequest passwordResetTokenRequest) {
+        UserEntity user = userRepository.findByEmail(passwordResetTokenRequest.getEmail()).get();
+        user.setVerified(true);
+        userRepository.save(user);
+    }
+
+
+
+    public void CheckCode(PasswordResetTokenRequest passwordResetTokenRequest) {
+        String storedCode = code;
+        if (storedCode == null || !storedCode.equals(passwordResetTokenRequest.getCode())) {
+            throw new CustomException("Invalid or expired code", 400);
         }
-
     }
 
-    public ResponseEntity<?> getAllOrderCertificate(int id) {
-        if (courseRepository.findById(id).isPresent()) {
-            List<EnrollCourseEntity> enrolls = enrollCourseRepository.findByIsOrderCertification(true);
-            return new ResponseEntity<>(enrolls.stream().map(this::convertToDTO).collect(Collectors.toList()), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("This Course Not Exist", HttpStatus.NOT_FOUND);
-        }
+    public boolean isValidGmail(String email) {
+        String regex = "^[a-zA-Z0-9._%+-]+@gmail\\.com$";
+        return email.matches(regex);
     }
 
-    // Convert CourseEntity to CourseDTO
-    private OrderCertificateResponse convertToDTO(EnrollCourseEntity enroll) {
-        OrderCertificateResponse order = new OrderCertificateResponse();
-        order.setOrderCertificate(enroll.isOrderCertification());
-        UserEntity user = new UserEntity();
-        // Initialize Object
-        user.setId(getUser(enroll).getId());
-        user.setFirstName(enroll.getUser().getFirstName());
-        user.setLastName(enroll.getUser().getLastName());
-        user.setEmail(enroll.getUser().getEmail());
-        user.setBio(enroll.getUser().getBio());
-        user.setDob(enroll.getUser().getDob());
-        user.setAccountType(enroll.getUser().getAccountType());
-        user.setGender(enroll.getUser().getGender());
-        user.setPhoneNumber(enroll.getUser().getPhoneNumber());
-        user.setEducation(enroll.getUser().getEducation());
-        order.setUser(user);
-        return order;
+
+    public void changePassword(PasswordResetTokenRequest passwordResetTokenRequest) {
+        UserEntity user = userRepository.findByEmail(passwordResetTokenRequest.getEmail()).get();
+        user.setPassword(passwordResetTokenRequest.getNewPassword());
+        userRepository.save(user);
     }
 
-    private static UserEntity getUser(EnrollCourseEntity enroll) {
-        return enroll.getUser();
+    public String generateRandomCode() {
+        SecureRandom random = new SecureRandom();
+         code =String.valueOf(10000 + random.nextInt(90000)) ;
+        return code;
     }
-
 }

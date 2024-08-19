@@ -182,4 +182,5 @@ public class ServiceService {
         dto.setCourseTime(courseDayEntity.isCourseTime() ? "Morning" : "Evening");
         return dto;
     }
+
 }

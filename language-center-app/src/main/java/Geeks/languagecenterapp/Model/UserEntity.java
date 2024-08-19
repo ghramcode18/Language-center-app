@@ -106,4 +106,17 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MarkEntity> marks;
 
+    private boolean verified = false;  // Default to false
+
+    private String verificationToken;
+
+    private String passwordResetToken;
+
+    public void setVerificationToken(String verificationToken) {
+        this.verificationToken = verificationToken;
+    }
+
+    public void setPasswordResetToken(String passwordResetToken) {
+        this.passwordResetToken = passwordResetToken;
+    }
 }
